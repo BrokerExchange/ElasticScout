@@ -1,3 +1,9 @@
+[![Latest Stable Version](https://poser.pugx.org/brokerexchange/elasticscout/v/stable)](https://packagist.org/packages/brokerexchange/elasticscout)
+[![Latest Unstable Version](https://poser.pugx.org/brokerexchange/elasticscout/v/unstable)](https://packagist.org/packages/brokerexchange/elasticscout)
+[![Total Downloads](https://poser.pugx.org/brokerexchange/elasticscout/downloads)](https://packagist.org/packages/brokerexchange/elasticscout)
+[![License](https://poser.pugx.org/brokerexchange/elasticscout/license)](https://packagist.org/packages/brokerexchange/elasticscout)
+[![composer.lock](https://poser.pugx.org/brokerexchange/elasticscout/composerlock)](https://packagist.org/packages/brokerexchange/elasticscout)
+
 # ElasticScout
 Laravel Scout Driver for Elasticsearch
 
