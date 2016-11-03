@@ -1,0 +1,25 @@
+{
+  "name": "brokerexchange/elasticscout",
+  "description": "Query DSL Builder for Elasticsearch queries.",
+  "keywords": [
+    "elasticsearch",
+    "search",
+    "laravel",
+    "scout"
+  ],
+  "license": "MIT",
+  "homepage": "http://brokerexchange.github.io/ElasticScout/",
+  "authors": [
+    {
+      "name": "Brian Mix",
+      "email": "brian@brokerbin.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "ElasticScout\\": "src/"
+    }
+  }
+}
