@@ -5,7 +5,8 @@
     "elasticsearch",
     "search",
     "laravel",
-    "scout"
+    "scout",
+    "5.0"
   ],
   "license": "MIT",
   "homepage": "http://brokerexchange.github.io/ElasticScout/",
