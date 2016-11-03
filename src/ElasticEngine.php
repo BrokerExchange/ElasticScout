@@ -145,7 +145,6 @@ class ElasticEngine extends Engine
     {
         $filters = [];
 
-
         if(!empty($query->query)) {
             $queries[] = [
                 'match' => [
