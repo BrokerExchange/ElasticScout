@@ -37,7 +37,6 @@ class ElasticEngine extends Engine
     public function __construct(Elasticsearch $elasticsearch)
     {
         $this->elasticsearch = $elasticsearch;
-
     }
 
     /**

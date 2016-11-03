@@ -8,7 +8,6 @@
 
 namespace ElasticScout;
 
-//use App\Scout\Engines\ElasticEngine;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
 use Elasticsearch;
@@ -25,17 +24,6 @@ class ElasticScoutServiceProvider extends ServiceProvider
         resolve(EngineManager::class)->extend('elastic', function () {
             $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('scout.elasticsearch.config.hosts'))->build();
             return new ElasticEngine($client);
-
         });
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }
