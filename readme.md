@@ -1,15 +1,18 @@
 # ElasticScout
-Laravel Scout Driver for Elasticsearch 5.0+
+Laravel Scout Driver for Elasticsearch
 
 ## Overview
-Laravel Scout is great! But, the Elasticsearch engine could be better in regards to being more 5.0 friendly. This engine uses a standard bool query with must and filter clauses to match all fields.
+[Laravel Scout](https://github.com/laravel/scout) is great! But, the Elasticsearch engine could be better in regards to being more 2.0/5.0 friendly. It useses a depricated "filtered" 
+query that is is not compatible with Elasticsearch 5.0. It also uses a single index for all models, potentially causing conflicts between fields with the same names, but different data types.
+
+The ElasticScout engine uses a standard bool query with must and filter clauses to match all fields.
 It also uses a unique index for each model, instead of unique types in a single index per model. This ensure you will not have field type conflicts.
 
 ## License
-ElasticQueue is released under the MIT Open Source License, <https://opensource.org/licenses/MIT>
+ElasticScout is released under the MIT Open Source License, <https://opensource.org/licenses/MIT>
 
 ## Copyright
-ElasticQueue &copy; Broker Exchange Network
+ElasticScout &copy; Broker Exchange Network
 
 ## Installation
  * run command `composer require brokerexchange\elasticscout`

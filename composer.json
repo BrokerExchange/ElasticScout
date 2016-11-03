@@ -1,6 +1,6 @@
 {
   "name": "brokerexchange/elasticscout",
-  "description": "Query DSL Builder for Elasticsearch queries.",
+  "description": "Laravel Scout Driver for Elasticsearch 2.0/5.0",
   "keywords": [
     "elasticsearch",
     "search",
@@ -16,7 +16,10 @@
     }
   ],
   "minimum-stability": "stable",
-  "require": {},
+  "require": {
+    "elasticsearch/elasticsearch": "^2.0.0|^5.0.0",
+    "laravel/scout": "^1.1"
+  },
   "autoload": {
     "psr-4": {
       "ElasticScout\\": "src/"
