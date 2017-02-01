@@ -150,24 +150,31 @@ class ElasticEngine extends Engine
                 'match' => [
                     '_all' => [
                         'query' => $query->query,
-                        'fuzziness' => 1
+                        'fuzziness' => 1,
+                        'operator' => 'and',
+                        'minimum_should_match' => '60%'
                     ]
                 ]
             ];
         } else {
             $queries[] = [
-                'match_all' => []
+                'match_all' => new \stdClass(),
             ];
         }
 
         if (array_key_exists('filters', $options) && $options['filters']) {
             foreach ($options['filters'] as $field => $value) {
-
-                if(is_numeric($value)) {
+                if(is_numeric($value) || (is_string($value) && strstr($value,' ')==0)) {
                     $filters[] = [
                         'term' => [
                             $field => $value,
                         ],
+                    ];
+                } elseif(is_array($value)) {
+                    $filters[] = [
+                        'terms' => [
+                            $field => $value
+                        ]
                     ];
                 } elseif(is_string($value)) {
                     $queries[] = [
@@ -179,7 +186,6 @@ class ElasticEngine extends Engine
                         ]
                     ];
                 }
-
             }
         }
 
@@ -220,6 +226,17 @@ class ElasticEngine extends Engine
     protected function filters(Builder $query)
     {
         return $query->wheres;
+    }
+
+    /**
+     * Pluck and return the primary keys of the given results.
+     *
+     * @param  mixed  $results
+     * @return \Illuminate\Support\Collection
+     */
+    public function mapIds($results)
+    {
+        return collect($results['hits'])->pluck('_id')->values();
     }
 
     /**

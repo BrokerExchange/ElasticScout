@@ -1,12 +1,11 @@
 {
   "name": "brokerexchange/elasticscout",
-  "description": "Laravel Scout Driver for Elasticsearch 2.0/5.0",
+  "description": "Laravel Scout Driver for Elasticsearch 5.x",
   "keywords": [
     "elasticsearch",
     "search",
     "laravel",
-    "scout",
-    "5.0"
+    "scout"
   ],
   "license": "MIT",
   "homepage": "http://brokerexchange.github.io/ElasticScout/",
@@ -18,8 +17,8 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "elasticsearch/elasticsearch": "^2.0.0|^5.0.0",
-    "laravel/scout": "^1.1"
+    "elasticsearch/elasticsearch": "^5.0.0",
+    "laravel/scout": "^3.0"
   },
   "autoload": {
     "psr-4": {
