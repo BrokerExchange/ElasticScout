@@ -22,7 +22,7 @@ class ElasticScoutServiceProvider extends ServiceProvider
     public function boot()
     {
         resolve(EngineManager::class)->extend('elastic', function () {
-            $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('elasticsearch.hosts',['localhost:9200']))->build();
+            $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('scout.elastic.hosts',['localhost:9200']))->build();
             return new ElasticEngine($client);
         });
     }
