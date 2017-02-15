@@ -109,6 +109,7 @@ class ElasticEngine extends Engine
     {
         return $this->performSearch($query, [
             'filters' => $this->filters($query),
+            'orders' => $this->orders($query),
             'size' => $query->limit ?: 10000,
         ]);
     }
@@ -125,6 +126,7 @@ class ElasticEngine extends Engine
     {
         $result = $this->performSearch($query, [
             'filters' => $this->filters($query),
+            'orders' => $this->orders($query),
             'size' => $perPage,
             'from' => (($page * $perPage) - $perPage),
         ]);
@@ -208,6 +210,12 @@ class ElasticEngine extends Engine
             ]);
         }
 
+        if (array_key_exists('orders', $options)) {
+            $search['body'] = array_merge($search['body'], [
+                'sort' => $options['orders'],
+            ]);
+        }
+
         if (array_key_exists('from', $options)) {
             $search = array_merge($search, [
                 'from' => $options['from'],
@@ -226,6 +234,17 @@ class ElasticEngine extends Engine
     protected function filters(Builder $query)
     {
         return $query->wheres;
+    }
+
+    /**
+     * @param Builder $query
+     * @return array
+     */
+    protected function orders(Builder $query)
+    {
+        return collect($query->orders)->mapWithKeys(function($sort) {
+            return [$sort['column'] => $sort['direction']];
+        })->all();
     }
 
     /**
