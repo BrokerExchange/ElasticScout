@@ -9,10 +9,10 @@
 namespace ElasticScout;
 
 use Laravel\Scout\Engines\Engine;
-use Laravel\Scout\Builder;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
+use Laravel\Scout\Builder as ScoutBuilder;
 
 class ElasticEngine extends Engine
 {
@@ -105,7 +105,7 @@ class ElasticEngine extends Engine
      * @param  Builder  $query
      * @return mixed
      */
-    public function search(Builder $query)
+    public function search(ScoutBuilder $query)
     {
         return $this->performSearch($query, [
             'filters' => $this->filters($query),
@@ -122,16 +122,18 @@ class ElasticEngine extends Engine
      * @param  int  $page
      * @return mixed
      */
-    public function paginate(Builder $query, $perPage, $page)
+    public function paginate(ScoutBuilder $query, $perPage, $page)
     {
         $result = $this->performSearch($query, [
-            'filters' => $this->filters($query),
+//            'filters' => $this->filters($query),
             'orders' => $this->orders($query),
             'size' => $perPage,
             'from' => (($page * $perPage) - $perPage),
         ]);
 
         $result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
+
+//        dd($result);
 
         return $result;
     }
@@ -145,64 +147,73 @@ class ElasticEngine extends Engine
      */
     protected function performSearch(Builder $query, array $options = [])
     {
-        $filters = [];
+        if(empty($query->dsl())) {
+            $filters = [];
 
-        if(!empty($query->query)) {
-            $queries[] = [
-                'match' => [
-                    '_all' => [
-                        'query' => $query->query,
-                        'fuzziness' => 1,
-                        'operator' => 'and',
-                        'minimum_should_match' => '60%'
+            if(!empty($query->query)) {
+                $queries[] = [
+                    'match' => [
+                        '_all' => [
+                            'query' => $query->query,
+                            'fuzziness' => 1,
+                            'operator' => 'and',
+                            'minimum_should_match' => '60%'
+                        ]
                     ]
-                ]
-            ];
-        } else {
-            $queries[] = [
-                'match_all' => new \stdClass(),
-            ];
-        }
+                ];
+            } else {
+                $queries[] = [
+                    'match_all' => new \stdClass(),
+                ];
+            }
 
-        if (array_key_exists('filters', $options) && $options['filters']) {
-            foreach ($options['filters'] as $field => $value) {
-                if(is_numeric($value) || (is_string($value) && strstr($value,' ')==0)) {
-                    $filters[] = [
-                        'term' => [
-                            $field => $value,
-                        ],
-                    ];
-                } elseif(is_array($value)) {
-                    $filters[] = [
-                        'terms' => [
-                            $field => $value
-                        ]
-                    ];
-                } elseif(is_string($value)) {
-                    $queries[] = [
-                        'match' => [
-                            $field => [
-                                'query' => $value,
-                                'operator' => 'and'
+            if (array_key_exists('filters', $options) && $options['filters']) {
+                foreach ($options['filters'] as $field => $value) {
+                    if(is_numeric($value) || (is_string($value) && strstr($value,' ')==0)) {
+                        $filters[] = [
+                            'term' => [
+                                $field => $value,
+                            ],
+                        ];
+                    } elseif(is_array($value)) {
+                        $filters[] = [
+                            'terms' => [
+                                $field => $value
                             ]
-                        ]
-                    ];
+                        ];
+                    } elseif(is_string($value)) {
+                        $queries[] = [
+                            'match' => [
+                                $field => [
+                                    'query' => $value,
+                                    'operator' => 'and'
+                                ]
+                            ]
+                        ];
+                    }
                 }
             }
-        }
 
-        $search = [
-            'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
-            'type'  =>  $this->type,
-            'body' => [
-                'query' => [
-                    'bool' => [
-                        'filter' => $filters,
-                        'must' => $queries,
+            $search = [
+                'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
+                'type'  =>  $this->type,
+                'body' => [
+                    'query' => [
+                        'bool' => [
+                            'filter' => $filters,
+                            'must' => $queries,
+                        ],
                     ],
                 ],
-            ],
-        ];
+            ];
+
+        } else {
+            $search = [
+                'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
+                'type'  =>  $this->type,
+                'body' => $query->dsl(),
+            ];
+        }
 
         if (array_key_exists('size', $options)) {
             $search = array_merge($search, [
@@ -221,6 +232,8 @@ class ElasticEngine extends Engine
                 'from' => $options['from'],
             ]);
         }
+
+//        dd($search);
 
         return $this->elasticsearch->search($search);
     }
