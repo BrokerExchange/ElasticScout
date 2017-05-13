@@ -72,9 +72,12 @@ class Builder extends \Laravel\Scout\Builder
      * @param $query
      * @return $this
      */
-    public function positive($query)
+    public function positive(Array $query)
     {
-        $this->dsl[$this->combo]['positive'][] = $query;
+        if(count($query)) {
+            $this->dsl[$this->combo]['positive'][] = $query;
+        }
+
         return $this;
     }
 
@@ -82,27 +85,38 @@ class Builder extends \Laravel\Scout\Builder
      * @param $query
      * @return $this
      */
-    public function negative($query)
+    public function negative(Array $query)
     {
-        $this->dsl[$this->combo]['negative'][] = $query;
+        if(count($query)) {
+            $this->dsl[$this->combo]['negative'][] = $query;
+        }
+
         return $this;
     }
 
     /**
      * @param array $queries
+     * @return $this
      */
     public function queries(Array $queries)
     {
-        $this->dsl[$this->combo]['queries'] = $queries;
+        if(count($queries)) {
+            $this->dsl[$this->combo]['queries'] = $queries;
+        }
+
+        return $this;
     }
 
     /**
      * @param $query
      * @return $this
      */
-    public function must($query)
+    public function must(Array $query)
     {
-        $this->dsl[$this->combo]['must'][] = $query;
+        if(count($query)) {
+            $this->dsl[$this->combo]['must'][] = $query;
+        }
+
         return $this;
     }
 
@@ -110,9 +124,12 @@ class Builder extends \Laravel\Scout\Builder
      * @param $filter
      * @return $this
      */
-    public function filter($filter)
+    public function filter(Array $filter)
     {
-        $this->dsl[$this->combo]['filter'][] = $filter;
+        if(count($filter)) {
+            $this->dsl[$this->combo]['filter'][] = $filter;
+        }
+
         return $this;
     }
 
@@ -120,9 +137,12 @@ class Builder extends \Laravel\Scout\Builder
      * @param $query
      * @return $this
      */
-    public function should($query)
+    public function should(Array $query)
     {
-        $this->dsl[$this->combo]['should'][] = $query;
+        if(count($query)) {
+            $this->dsl[$this->combo]['should'][] = $query;
+        }
+
         return $this;
     }
 

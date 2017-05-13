@@ -1,0 +1,33 @@
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "title": []
+          }
+        },
+        {
+          "match": {
+            "body": []
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "category.id": 2
+          }
+        }
+      ]
+    }
+  },
+  "aggregations": {
+    "slugs": {
+      "terms": {
+        "field": "slug.keyword"
+      }
+    }
+  },
+  "sort": []
+}

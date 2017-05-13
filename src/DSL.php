@@ -22,11 +22,15 @@ trait DSL
      */
     public function term($field,$value)
     {
-        return [
-            'term' => [
-                $field => $value
-            ]
-        ];
+        if(!empty($value) && !empty($field)) {
+            return [
+                'term' => [
+                    $field => $value
+                ]
+            ];
+        }
+
+        return [];
     }
 
     /**
@@ -36,11 +40,16 @@ trait DSL
      */
     public function terms($field,$values=[])
     {
-        return [
-            'terms' => [
-                $field => $values
-            ]
-        ];
+        if(!empty($fields) && count($values)) {
+            return [
+                'terms' => [
+                    $field => $values
+                ]
+            ];
+        }
+
+        return [];
+
     }
 
     /**
@@ -52,16 +61,21 @@ trait DSL
     public function range($field,$ranges=[],$boost=null)
     {
 
-        if(!is_null($boost))
-        {
-            $ranges = array_merge($ranges,['boost'=>$boost]);
+        if(count($ranges) && !empty($field)) {
+            if(!is_null($boost))
+            {
+                $ranges = array_merge($ranges,['boost'=>$boost]);
+            }
+
+            return [
+                'range' => [
+                    $field => $ranges
+                ]
+            ];
         }
 
-        return [
-            'range' => [
-                $field => $ranges
-            ]
-        ];
+        return [];
+
     }
 
     /**
@@ -78,19 +92,23 @@ trait DSL
     public function match($field,$query,$operator=null,$type=null,$minimum=null,$boost=null,$analyzer=null,$fuzziness=null)
     {
 
-        $params = [
-            'match' => [
-                $field => array_filter([
-                    'query' => $query,
-                    'operator' => $operator,
-                    'type' => $type,
-                    'analyzer' => $analyzer,
-                    'minimum_should_match' => $minimum,
-                    'boost' => $boost,
-                    'fuzziness' => $fuzziness
-                ])
-            ]
-        ];
+        $params = [];
+
+        if(!empty($field) && !empty($query)) {
+            $params = [
+                'match' => [
+                    $field => array_filter([
+                        'query' => $query,
+                        'operator' => $operator,
+                        'type' => $type,
+                        'analyzer' => $analyzer,
+                        'minimum_should_match' => $minimum,
+                        'boost' => $boost,
+                        'fuzziness' => $fuzziness
+                    ])
+                ]
+            ];
+        }
 
         return $params;
     }
@@ -108,19 +126,22 @@ trait DSL
      */
     public function multi_match($fields=[],$query,$operator=null,$type=null,$minimum=null,$boost=null,$analyzer=null,$fuzziness=null)
     {
+        $params = [];
 
-        $params = [
-            'multi_match' => array_filter([
-                'query' => $query,
-                'type' => $type,
-                'fields' => $fields,
-                'operator' => $operator,
-                'analyzer' => $analyzer,
-                'minimum_should_match' => $minimum,
-                'fuzziness' => $fuzziness,
-                'boost' => $boost,
-            ])
-        ];
+        if(count($fields) && !empty($query)) {
+            $params = [
+                'multi_match' => array_filter([
+                    'query' => $query,
+                    'type' => $type,
+                    'fields' => $fields,
+                    'operator' => $operator,
+                    'analyzer' => $analyzer,
+                    'minimum_should_match' => $minimum,
+                    'fuzziness' => $fuzziness,
+                    'boost' => $boost,
+                ])
+            ];
+        }
 
         return $params;
     }
@@ -145,7 +166,7 @@ trait DSL
      * @param string $analyzer
      * @return array
      */
-    public function common($field,$value,$boost=0,$cuttoff=0,$low_freq_operator=null,$high_freq_operator=null,$analyzer=null)
+    public function common($field,$value,$boost=0,$cuttoff=0.0,$low_freq_operator=null,$high_freq_operator=null,$analyzer=null)
     {
         return [
             'common' => [

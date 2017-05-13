@@ -102,13 +102,12 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  Builder  $query
-     * @return mixed
+     * @param ScoutBuilder $query
+     * @return array
      */
     public function search(ScoutBuilder $query)
     {
         return $this->performSearch($query, [
-            'filters' => $this->filters($query),
             'orders' => $this->orders($query),
             'size' => $query->limit ?: 10000,
         ]);
@@ -117,15 +116,14 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  Builder  $query
-     * @param  int  $perPage
-     * @param  int  $page
+     * @param ScoutBuilder $query
+     * @param int $perPage
+     * @param int $page
      * @return mixed
      */
     public function paginate(ScoutBuilder $query, $perPage, $page)
     {
         $result = $this->performSearch($query, [
-//            'filters' => $this->filters($query),
             'orders' => $this->orders($query),
             'size' => $perPage,
             'from' => (($page * $perPage) - $perPage),
@@ -133,87 +131,23 @@ class ElasticEngine extends Engine
 
         $result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
 
-//        dd($result);
-
         return $result;
     }
 
     /**
      * Perform the given search on the engine.
      *
-     * @param  Builder  $query
-     * @param  array  $options
-     * @return mixed
+     * @param ScoutBuilder $query
+     * @param array $options
+     * @return array
      */
-    protected function performSearch(Builder $query, array $options = [])
+    protected function performSearch(ScoutBuilder $query, array $options = [])
     {
-        if(empty($query->dsl())) {
-            $filters = [];
-
-            if(!empty($query->query)) {
-                $queries[] = [
-                    'match' => [
-                        '_all' => [
-                            'query' => $query->query,
-                            'fuzziness' => 1,
-                            'operator' => 'and',
-                            'minimum_should_match' => '60%'
-                        ]
-                    ]
-                ];
-            } else {
-                $queries[] = [
-                    'match_all' => new \stdClass(),
-                ];
-            }
-
-            if (array_key_exists('filters', $options) && $options['filters']) {
-                foreach ($options['filters'] as $field => $value) {
-                    if(is_numeric($value) || (is_string($value) && strstr($value,' ')==0)) {
-                        $filters[] = [
-                            'term' => [
-                                $field => $value,
-                            ],
-                        ];
-                    } elseif(is_array($value)) {
-                        $filters[] = [
-                            'terms' => [
-                                $field => $value
-                            ]
-                        ];
-                    } elseif(is_string($value)) {
-                        $queries[] = [
-                            'match' => [
-                                $field => [
-                                    'query' => $value,
-                                    'operator' => 'and'
-                                ]
-                            ]
-                        ];
-                    }
-                }
-            }
-
-            $search = [
-                'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
-                'type'  =>  $this->type,
-                'body' => [
-                    'query' => [
-                        'bool' => [
-                            'filter' => $filters,
-                            'must' => $queries,
-                        ],
-                    ],
-                ],
-            ];
-
-        } else {
-            $search = [
-                'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
-                'type'  =>  $this->type,
-                'body' => $query->dsl(),
-            ];
-        }
+        $search = [
+            'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
+            'type'  =>  $this->type,
+            'body' => $query->dsl(),
+        ];
 
         if (array_key_exists('size', $options)) {
             $search = array_merge($search, [
@@ -239,21 +173,10 @@ class ElasticEngine extends Engine
     }
 
     /**
-     * Get the filter array for the query.
-     *
-     * @param  Builder  $query
+     * @param ScoutBuilder $query
      * @return array
      */
-    protected function filters(Builder $query)
-    {
-        return $query->wheres;
-    }
-
-    /**
-     * @param Builder $query
-     * @return array
-     */
-    protected function orders(Builder $query)
+    protected function orders(ScoutBuilder $query)
     {
         return collect($query->orders)->mapWithKeys(function($sort) {
             return [$sort['column'] => $sort['direction']];
@@ -276,7 +199,7 @@ class ElasticEngine extends Engine
      *
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return Collection
+     * @return \Illuminate\Support\Collection;
      */
     public function map($results, $model)
     {
