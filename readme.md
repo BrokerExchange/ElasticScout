@@ -5,7 +5,7 @@
 [![composer.lock](https://poser.pugx.org/brokerexchange/elasticscout/composerlock)](https://packagist.org/packages/brokerexchange/elasticscout)
 
 # ElasticScout
-Laravel Scout Driver for Elasticsearch 5.x
+A [Laravel Scout](https://github.com/laravel/scout) Driver for Elasticsearch 5.x
 
 ## Overview
 ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds additional functionality.
