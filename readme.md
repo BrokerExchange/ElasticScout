@@ -26,11 +26,5 @@ ElasticScout &copy; Broker Exchange Network
 
 ## Usage
 `
-$results = $article->search()
-    ->boolean()
-    ->should($article->match('title',$request->input('query')))
-    ->should($article->match('body',$request->input('query')))
-    ->filter($article->term('published', 1))
-    ->aggregate($article->agg()->terms('categories', 'category.name'))
-    ->paginate();
- `
+$results = $article->search()->boolean()->should($article->match('title',$request->input('query')))->should($article->match('body',$request->input('query')))->filter($article->term('published', 1))->aggregate($article->agg()->terms('categories', 'category.name'))->paginate();
+`
