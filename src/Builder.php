@@ -30,6 +30,19 @@ class Builder extends \Laravel\Scout\Builder
     protected $combo = '';
 
     /**
+     * @param array $query
+     * @return $this
+     */
+    public function query(Array $query)
+    {
+        if(count($query)) {
+            $this->dsl = $query;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param int $boost
      */
     public function dis_max($boost = 0)
