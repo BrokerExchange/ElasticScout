@@ -30,6 +30,43 @@ class Builder extends \Laravel\Scout\Builder
     protected $combo = '';
 
     /**
+     * @return mixed
+     */
+    public function dsl()
+    {
+        return array_filter([
+            'query' => $this->dsl,
+            'aggregations' => $this->aggregations,
+        ]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function aggregations()
+    {
+        return $this->aggregations;
+    }
+
+    /**
+     * @param $agg
+     * @return $this
+     */
+    public function aggregate(Array $agg)
+    {
+        $this->aggregations = array_merge($this->aggregations,$agg);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function toJson()
+    {
+        return json_encode($this->dsl());
+    }
+
+    /**
      * @param array $query
      * @return $this
      */
@@ -44,33 +81,6 @@ class Builder extends \Laravel\Scout\Builder
 
     /**
      * @param int $boost
-     */
-    public function dis_max($boost = 0)
-    {
-        $this->combo = 'dis_max';
-        $this->dsl = [$this->combo => ['boost'=>$boost]];
-    }
-
-    /**
-     * @param int $negative_boost
-     */
-    public function boosting($negative_boost = 0)
-    {
-        $this->combo = 'boosting';
-        $this->dsl = [$this->combo => array_filter(['negative_boost' => $negative_boost])];
-    }
-
-    /**
-     * @param int $boost
-     */
-    public function constant_score($boost = 0)
-    {
-        $this->combo = 'constant_score';
-        $this->dsl = [$this->combo => array_filter(['boost'=>$boost])];
-    }
-
-    /**
-     * @param int $boost
      * @param int $minimum_should_match
      * @return $this
      */
@@ -78,45 +88,6 @@ class Builder extends \Laravel\Scout\Builder
     {
         $this->combo = 'bool';
         $this->dsl = [$this->combo => array_filter(['boost'=>$boost,'minimum_should_match'=>$minimum_should_match])];
-        return $this;
-    }
-
-    /**
-     * @param $query
-     * @return $this
-     */
-    public function positive(Array $query)
-    {
-        if(count($query)) {
-            $this->dsl[$this->combo]['positive'][] = $query;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param $query
-     * @return $this
-     */
-    public function negative(Array $query)
-    {
-        if(count($query)) {
-            $this->dsl[$this->combo]['negative'][] = $query;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param array $queries
-     * @return $this
-     */
-    public function queries(Array $queries)
-    {
-        if(count($queries)) {
-            $this->dsl[$this->combo]['queries'] = $queries;
-        }
-
         return $this;
     }
 
@@ -160,39 +131,68 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
-     * @return mixed
+     * @param int $boost
      */
-    public function dsl()
+    public function dis_max($boost = 0)
     {
-        return array_filter([
-            'query' => $this->dsl,
-            'aggregations' => $this->aggregations,
-        ]);
+        $this->combo = 'dis_max';
+        $this->dsl = [$this->combo => ['boost'=>$boost]];
     }
 
     /**
-     * @return mixed
-     */
-    public function aggregations()
-    {
-        return $this->aggregations;
-    }
-
-    /**
-     * @param $agg
+     * @param array $queries
      * @return $this
      */
-    public function aggregate(Array $agg)
+    public function queries(Array $queries)
     {
-        $this->aggregations = array_merge($this->aggregations,$agg);
+        if(count($queries)) {
+            $this->dsl[$this->combo]['queries'] = $queries;
+        }
+
         return $this;
     }
 
     /**
-     * @return string
+     * @param int $negative_boost
      */
-    public function toJson()
+    public function boosting($negative_boost = 0)
     {
-        return json_encode($this->dsl());
+        $this->combo = 'boosting';
+        $this->dsl = [$this->combo => array_filter(['negative_boost' => $negative_boost])];
+    }
+
+    /**
+     * @param $query
+     * @return $this
+     */
+    public function positive(Array $query)
+    {
+        if(count($query)) {
+            $this->dsl[$this->combo]['positive'][] = $query;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $query
+     * @return $this
+     */
+    public function negative(Array $query)
+    {
+        if(count($query)) {
+            $this->dsl[$this->combo]['negative'][] = $query;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $boost
+     */
+    public function constant_score($boost = 0)
+    {
+        $this->combo = 'constant_score';
+        $this->dsl = [$this->combo => array_filter(['boost'=>$boost])];
     }
 }
