@@ -9,10 +9,10 @@
 namespace ElasticScout;
 
 use Laravel\Scout\Engines\Engine;
-use Laravel\Scout\Builder;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
+use Laravel\Scout\Builder;
 
 class ElasticEngine extends Engine
 {
@@ -22,13 +22,6 @@ class ElasticEngine extends Engine
      * @var \Elasticsearch\Client
      */
     protected $elasticsearch;
-
-    /**
-     * The type name.
-     *
-     * @var string
-     */
-    protected $type = 'doc';
 
     /**
      * ElasticEngine constructor.
@@ -59,7 +52,7 @@ class ElasticEngine extends Engine
             $body->push([
                 'index' => [
                     '_index' => $model->searchableAs(),
-                    '_type' => $this->type,
+                    '_type' => $model->searchableType(),
                     '_id' => $model->getKey(),
                 ],
             ]);
@@ -87,7 +80,7 @@ class ElasticEngine extends Engine
             $body->push([
                 'delete' => [
                     '_index' => $model->searchableAs(),
-                    '_type' => $this->type,
+                    '_type' => $model->searchableType(),
                     '_id'  => $model->getKey(),
                 ],
             ]);
@@ -102,13 +95,12 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  Builder  $query
-     * @return mixed
+     * @param Builder $query
+     * @return array
      */
     public function search(Builder $query)
     {
         return $this->performSearch($query, [
-            'filters' => $this->filters($query),
             'orders' => $this->orders($query),
             'size' => $query->limit ?: 10000,
         ]);
@@ -117,15 +109,14 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  Builder  $query
-     * @param  int  $perPage
-     * @param  int  $page
+     * @param Builder $query
+     * @param int $perPage
+     * @param int $page
      * @return mixed
      */
     public function paginate(Builder $query, $perPage, $page)
     {
         $result = $this->performSearch($query, [
-            'filters' => $this->filters($query),
             'orders' => $this->orders($query),
             'size' => $perPage,
             'from' => (($page * $perPage) - $perPage),
@@ -139,69 +130,16 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  Builder  $query
-     * @param  array  $options
-     * @return mixed
+     * @param Builder $query
+     * @param array $options
+     * @return array
      */
     protected function performSearch(Builder $query, array $options = [])
     {
-        $filters = [];
-
-        if(!empty($query->query)) {
-            $queries[] = [
-                'match' => [
-                    '_all' => [
-                        'query' => $query->query,
-                        'fuzziness' => 1,
-                        'operator' => 'and',
-                        'minimum_should_match' => '60%'
-                    ]
-                ]
-            ];
-        } else {
-            $queries[] = [
-                'match_all' => new \stdClass(),
-            ];
-        }
-
-        if (array_key_exists('filters', $options) && $options['filters']) {
-            foreach ($options['filters'] as $field => $value) {
-                if(is_numeric($value) || (is_string($value) && strstr($value,' ')==0)) {
-                    $filters[] = [
-                        'term' => [
-                            $field => $value,
-                        ],
-                    ];
-                } elseif(is_array($value)) {
-                    $filters[] = [
-                        'terms' => [
-                            $field => $value
-                        ]
-                    ];
-                } elseif(is_string($value)) {
-                    $queries[] = [
-                        'match' => [
-                            $field => [
-                                'query' => $value,
-                                'operator' => 'and'
-                            ]
-                        ]
-                    ];
-                }
-            }
-        }
-
         $search = [
             'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
-            'type'  =>  $this->type,
-            'body' => [
-                'query' => [
-                    'bool' => [
-                        'filter' => $filters,
-                        'must' => $queries,
-                    ],
-                ],
-            ],
+            'type'  =>  $query->model->searchableType(),
+            'body' => $query->dsl(),
         ];
 
         if (array_key_exists('size', $options)) {
@@ -222,18 +160,9 @@ class ElasticEngine extends Engine
             ]);
         }
 
-        return $this->elasticsearch->search($search);
-    }
+        dump($search);
 
-    /**
-     * Get the filter array for the query.
-     *
-     * @param  Builder  $query
-     * @return array
-     */
-    protected function filters(Builder $query)
-    {
-        return $query->wheres;
+        return $this->elasticsearch->search($search);
     }
 
     /**
@@ -263,7 +192,7 @@ class ElasticEngine extends Engine
      *
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return Collection
+     * @return \Illuminate\Support\Collection;
      */
     public function map($results, $model)
     {

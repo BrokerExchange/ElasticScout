@@ -13,6 +13,10 @@
     {
       "name": "Brian Mix",
       "email": "brian@brokerbin.com"
+    },
+    {
+      "name": "Jen Page",
+      "email": "jpage@brokerbin.com"
     }
   ],
   "minimum-stability": "stable",

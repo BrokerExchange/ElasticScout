@@ -5,14 +5,12 @@
 [![composer.lock](https://poser.pugx.org/brokerexchange/elasticscout/composerlock)](https://packagist.org/packages/brokerexchange/elasticscout)
 
 # ElasticScout
-Laravel Scout Driver for Elasticsearch
+A [Laravel Scout](https://github.com/laravel/scout) Driver for Elasticsearch 5.x
 
 ## Overview
-[Laravel Scout](https://github.com/laravel/scout) is great! But, the Elasticsearch engine could be better in regards to being more 2.0/5.0 friendly. It useses a depricated "filtered" 
-query that is is not compatible with Elasticsearch 5.0. It also uses a single index for all models, potentially causing conflicts between fields with the same names, but different data types.
+ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds additional functionality.
 
-The ElasticScout engine uses a standard bool query with must and filter clauses to match all fields.
-It also uses a unique index for each model, instead of unique types in a single index per model. This ensure you will not have field type conflicts.
+The ElasticScout engine includes an Elasticsearch Query Builder which can be used to create elaborate custom queries and aggregations, allowing full use of Elasticsearch within the Laravel/Scout Paradigm.
 
 ## License
 ElasticScout is released under the MIT Open Source License, <https://opensource.org/licenses/MIT>
@@ -22,5 +20,11 @@ ElasticScout &copy; Broker Exchange Network
 
 ## Installation
  * run command `composer require brokerexchange\elasticscout`
- * Add `ElasticQueue\ElasticScoutServiceProvider::class,` to config/app.php
+ * Add `ElasticScout\ElasticScoutServiceProvider::class,` to config/app.php
  * Set default scout driver to "elastic" in .env file:  `SCOUT_DRIVER=elastic`
+ * Add `use ElasticScout\Searchable;` trait to desired model
+
+## Usage
+`
+$results = $article->search()->boolean()->should($article->match('title',$request->input('query')))->should($article->match('body',$request->input('query')))->filter($article->term('published', 1))->aggregate($article->agg()->terms('categories', 'category.name'))->paginate();
+`
