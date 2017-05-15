@@ -12,7 +12,7 @@ use Laravel\Scout\Engines\Engine;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
-use Laravel\Scout\Builder as ScoutBuilder;
+use Laravel\Scout\Builder;
 
 class ElasticEngine extends Engine
 {
@@ -102,10 +102,10 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param ScoutBuilder $query
+     * @param Builder $query
      * @return array
      */
-    public function search(ScoutBuilder $query)
+    public function search(Builder $query)
     {
         return $this->performSearch($query, [
             'orders' => $this->orders($query),
@@ -116,12 +116,12 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param ScoutBuilder $query
+     * @param Builder $query
      * @param int $perPage
      * @param int $page
      * @return mixed
      */
-    public function paginate(ScoutBuilder $query, $perPage, $page)
+    public function paginate(Builder $query, $perPage, $page)
     {
         $result = $this->performSearch($query, [
             'orders' => $this->orders($query),
@@ -137,11 +137,11 @@ class ElasticEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param ScoutBuilder $query
+     * @param Builder $query
      * @param array $options
      * @return array
      */
-    protected function performSearch(ScoutBuilder $query, array $options = [])
+    protected function performSearch(Builder $query, array $options = [])
     {
         $search = [
             'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
@@ -167,16 +167,16 @@ class ElasticEngine extends Engine
             ]);
         }
 
-//        dd($search);
+        dump($search);
 
         return $this->elasticsearch->search($search);
     }
 
     /**
-     * @param ScoutBuilder $query
+     * @param Builder $query
      * @return array
      */
-    protected function orders(ScoutBuilder $query)
+    protected function orders(Builder $query)
     {
         return collect($query->orders)->mapWithKeys(function($sort) {
             return [$sort['column'] => $sort['direction']];

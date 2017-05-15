@@ -40,7 +40,7 @@ trait DSL
      */
     public function terms($field,$values=[])
     {
-        if(!empty($fields) && count($values)) {
+        if(!empty($field) && count($values)) {
             return [
                 'terms' => [
                     $field => $values

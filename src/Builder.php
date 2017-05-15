@@ -8,6 +8,9 @@
 
 namespace ElasticScout;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 /**
  * Class Builder
  * @package ElasticScout
@@ -29,6 +32,33 @@ class Builder extends \Laravel\Scout\Builder
      */
     protected $combo = '';
 
+
+    public function paginate($perPage = null, $pageName = 'page', $page = null)
+    {
+        $engine = $this->engine();
+
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
+
+        $perPage = $perPage ?: $this->model->getPerPage();
+
+        $results = Collection::make($engine->map(
+            $rawResults = $engine->paginate($this, $perPage, $page), $this->model
+
+        ));
+
+        if(!empty($rawResults['aggregations'])) {
+            $this->aggregations = $rawResults['aggregations'];
+        }
+
+        $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => $pageName,
+        ]));
+
+        return $paginator->appends('query', $this->query);
+    }
+
+
     /**
      * @return mixed
      */
@@ -36,15 +66,20 @@ class Builder extends \Laravel\Scout\Builder
     {
         return array_filter([
             'query' => $this->dsl,
-            'aggregations' => $this->aggregations,
+            'aggregations' => $this->aggregations(),
         ]);
     }
 
     /**
+     * @param null $key
      * @return mixed
      */
-    public function aggregations()
+    public function aggregations($key = null)
     {
+        if(!empty($key) && isset($this->aggregations[$key])) {
+            return Collection::make($this->aggregations[$key]['buckets']);
+        }
+
         return $this->aggregations;
     }
 
