@@ -160,8 +160,6 @@ class ElasticEngine extends Engine
             ]);
         }
 
-        dump($search);
-
         return $this->elasticsearch->search($search);
     }
 
