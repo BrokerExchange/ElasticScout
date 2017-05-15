@@ -24,13 +24,6 @@ class ElasticEngine extends Engine
     protected $elasticsearch;
 
     /**
-     * The type name.
-     *
-     * @var string
-     */
-    protected $type = 'doc';
-
-    /**
      * ElasticEngine constructor.
      * @param Elasticsearch $elasticsearch
      */
@@ -59,7 +52,7 @@ class ElasticEngine extends Engine
             $body->push([
                 'index' => [
                     '_index' => $model->searchableAs(),
-                    '_type' => $this->type,
+                    '_type' => $model->searchableType(),
                     '_id' => $model->getKey(),
                 ],
             ]);
@@ -87,7 +80,7 @@ class ElasticEngine extends Engine
             $body->push([
                 'delete' => [
                     '_index' => $model->searchableAs(),
-                    '_type' => $this->type,
+                    '_type' => $model->searchableType(),
                     '_id'  => $model->getKey(),
                 ],
             ]);
@@ -145,7 +138,7 @@ class ElasticEngine extends Engine
     {
         $search = [
             'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
-            'type'  =>  $this->type,
+            'type'  =>  $query->model->searchableType(),
             'body' => $query->dsl(),
         ];
 

@@ -13,6 +13,14 @@ trait Searchable
     use \Laravel\Scout\Searchable;
 
     /**
+     * @return string
+     */
+    public function SearchableType()
+    {
+        return 'doc';
+    }
+
+    /**
      * @return Aggregation
      */
     public function agg()
