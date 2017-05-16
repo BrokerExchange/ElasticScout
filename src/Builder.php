@@ -76,11 +76,18 @@ class Builder extends \Laravel\Scout\Builder
      */
     public function aggregations($key = null)
     {
-        if(!empty($key) && isset($this->aggregations[$key])) {
+        if(!empty($key) && isset($this->aggregations[$key]) && isset($this->aggregations[$key]['buckets'])) {
             return Collection::make($this->aggregations[$key]['buckets']);
         }
 
         return $this->aggregations;
+    }
+
+    public function aggs(Array $aggs)
+    {
+        if(!empty($aggs)) {
+            $this->aggregations = $aggs;
+        }
     }
 
     /**

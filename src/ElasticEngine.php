@@ -8,11 +8,9 @@
 
 namespace ElasticScout;
 
-use Laravel\Scout\Engines\Engine;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
-use Laravel\Scout\Builder;
 
 class ElasticEngine extends Engine
 {
