@@ -11,6 +11,7 @@ namespace ElasticScout;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+
 /**
  * Class Builder
  * @package ElasticScout
@@ -32,7 +33,12 @@ class Builder extends \Laravel\Scout\Builder
      */
     protected $combo = '';
 
-
+    /**
+     * @param null $perPage
+     * @param string $pageName
+     * @param null $page
+     * @return LengthAwarePaginator
+     */
     public function paginate($perPage = null, $pageName = 'page', $page = null)
     {
         $engine = $this->engine();
@@ -58,7 +64,6 @@ class Builder extends \Laravel\Scout\Builder
         return $paginator->appends('query', $this->query);
     }
 
-
     /**
      * @return mixed
      */
@@ -83,6 +88,9 @@ class Builder extends \Laravel\Scout\Builder
         return $this->aggregations;
     }
 
+    /**
+     * @param array $aggs
+     */
     public function aggs(Array $aggs)
     {
         if(!empty($aggs)) {
