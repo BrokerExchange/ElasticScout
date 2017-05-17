@@ -414,4 +414,17 @@ trait DSL
             'not' => $query
         ];
     }
+
+    /**
+     * @param $value
+     * @return array
+     */
+    public function type($value)
+    {
+        return [
+            'type' => [
+                'value' => $value
+            ]
+        ];
+    }
 }
