@@ -8,13 +8,15 @@
 
 namespace ElasticScout;
 
-use Laravel\Scout\Engines\Engine;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
-use Laravel\Scout\Builder;
 
-class ElasticEngine extends Engine
+/**
+ * Class ElasticEngine
+ * @package ElasticScout
+ */
+class ElasticEngine
 {
     /**
      * The Elasticsearch client instance.
@@ -222,5 +224,35 @@ class ElasticEngine extends Engine
     public function getTotalCount($results)
     {
         return $results['hits']['total'];
+    }
+
+    /**
+     * Get the results of the query as a Collection of primary keys.
+     *
+     * @param  Builder  $builder
+     * @return \Illuminate\Support\Collection
+     */
+    public function keys(Builder $builder)
+    {
+        return $this->mapIds($this->search($builder));
+    }
+
+    /**
+     * Get the results of the given query mapped onto models.
+     *
+     * @param  Builder  $builder
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function get(Builder $builder)
+    {
+        $results = Collection::make($this->map(
+            $rawResults = $this->search($builder), $builder->model
+        ));
+
+        if(!empty($rawResults['aggregations'])) {
+            $builder->aggs($rawResults['aggregations']);
+        }
+
+        return $results;
     }
 }
