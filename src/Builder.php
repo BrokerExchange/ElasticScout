@@ -65,6 +65,30 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * Add an "order" for the search query.
+     *
+     * @param  string  $column
+     * @param  mixed  $direction
+     * @return $this
+     */
+    public function orderBy($column, $direction = 'asc')
+    {
+        if(is_array($direction)) {
+            $this->orders[] = [
+                'column' => $column,
+                'direction' => $direction,
+            ];
+        } else {
+            $this->orders[] = [
+                'column' => $column,
+                'direction' => strtolower($direction) == 'asc' ? 'asc' : 'desc',
+            ];
+        }
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function dsl()

@@ -12,6 +12,8 @@ trait Searchable
 
     use \Laravel\Scout\Searchable;
 
+    protected $sorting = [];
+
     /**
      * @return string
      */
@@ -38,5 +40,21 @@ trait Searchable
     public static function search($query = null, $callback = null)
     {
         return new Builder(new static, $query, $callback);
+    }
+
+    /**
+     * @param $sort
+     */
+    public function addSorting($sort)
+    {
+        $this->sorting = $sort;
+    }
+
+    /**
+     * @return array
+     */
+    public function sorting()
+    {
+        return $this->sorting;
     }
 }

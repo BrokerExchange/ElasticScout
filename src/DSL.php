@@ -405,6 +405,22 @@ trait DSL
     }
 
     /**
+     * @param $field
+     * @param $origin
+     * @param $distance
+     * @return array
+     */
+    public function geo_distance($field,$origin,$distance)
+    {
+        return [
+            'geo_distance' => [
+                'distance' => $distance,
+                $field => $origin
+            ]
+        ];
+    }
+
+    /**
      * @param $query
      * @return array
      */
