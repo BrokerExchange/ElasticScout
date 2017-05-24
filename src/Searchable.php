@@ -2,16 +2,22 @@
 
 namespace ElasticScout;
 
+use ElasticScout\Generators\Agg;
+use ElasticScout\Generators\DSL;
+
 /**
  * Class Searchable
  * @package ElasticScout
  */
 trait Searchable
 {
-    use DSL;
-
     use \Laravel\Scout\Searchable;
 
+    protected $sorting = [];
+
+    /**
+     * @var array
+     */
     protected $sorting = [];
 
     /**
@@ -23,18 +29,26 @@ trait Searchable
     }
 
     /**
-     * @return Aggregation
+     * @return Agg
      */
     public function agg()
     {
-        return new Aggregation;
+        return new Agg;
+    }
+
+    /**
+     * @return DSL
+     */
+    public function dsl()
+    {
+        return new DSL;
     }
 
     /**
      * Perform a search against the model's indexed data.
      *
      * @param  string  $query
-     * @param  Closure  $callback
+     * @param  \Closure  $callback
      * @return \Laravel\Scout\Builder
      */
     public static function search($query = null, $callback = null)

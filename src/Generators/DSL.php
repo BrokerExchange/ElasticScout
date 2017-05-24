@@ -6,13 +6,13 @@
  * Time: 1:34 PM
  */
 
-namespace ElasticScout;
+namespace ElasticScout\Generators;
 
 /**
  * Class DSL
  * @package ElasticScout
  */
-trait DSL
+class DSL
 {
 
     /**
