@@ -13,8 +13,6 @@ trait Searchable
 {
     use \Laravel\Scout\Searchable;
 
-    protected $sorting = [];
-
     /**
      * @var array
      */
