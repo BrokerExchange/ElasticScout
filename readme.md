@@ -19,12 +19,102 @@ ElasticScout is released under the MIT Open Source License, <https://opensource.
 ElasticScout &copy; Broker Exchange Network
 
 ## Installation
- * run command `composer require brokerexchange\elasticscout`
- * Add `ElasticScout\ElasticScoutServiceProvider::class,` to config/app.php
- * Set default scout driver to "elastic" in .env file:  `SCOUT_DRIVER=elastic`
- * Add `use ElasticScout\Searchable;` trait to desired model
-
+ * run composer require command
+ `composer require brokerexchange\elasticscout`
+ * Add Provider to config/app.php
+ ```php
+    ElasticScout\ElasticScoutServiceProvider::class,
+ ```
+ * Set default scout driver to "elastic" in .env file
+ ```env
+    SCOUT_DRIVER=elastic
+ ```
+ * Add trait to desired model
+ ```php
+    use ElasticScout\Searchable;
+ ```
+ * Add Facades to Alias list in config/app.php
+ ```php
+         'DSL'          => ElasticScout\Facades\Dsl::class,
+         'Agg'          => Elasticscout\Facades\Agg::class,
+ ```
+ 
 ## Usage
-`
-$results = $article->search()->boolean()->should($article->match('title',$request->input('query')))->should($article->match('body',$request->input('query')))->filter($article->term('published', 1))->aggregate($article->agg()->terms('categories', 'category.name'))->paginate();
-`
+ ```php
+    //create search/query object
+    $search = $article->search()
+        ->boolean()
+        ->should(DSL::match('title',$request->input('query')))
+        ->should(DSL::match('body',$request->input('query')))
+        ->filter(DSL::term('published', 1))
+        ->aggregate(Agg::terms('categories', 'category.name'));
+    
+    //retrieve aggregation results
+    $categories = $search->aggregations('categories');
+    
+    //fire the search
+    $results = $search->paginate();
+ ```
+## Mappings
+ You can set a custom mapping by simply defining a "mapping" method on your model.
+ 
+ ```php
+    public function mappings()
+    {
+        return [
+            $this->searchableType() => [
+                'properties' => [
+                    'name' => [
+                        'type' => 'text',
+                        'fields' => [
+                            'keyword' => [
+                                'type' => 'keyword',
+                            ],
+                            'autocomplete' => [
+                                'type' => 'text',
+                                'analyzer' => 'autocomplete',
+                                'search_analyzer' => 'autocomplete_search',
+                            ],
+                        ],
+                    ],
+                ]
+            ]
+        ]
+    }
+ ```
+ 
+ ## Settings
+  You can create custom settings and alalyzers by creating a "settings" method on the model.
+  
+ ```php
+    public function settings()
+    {
+      return [
+          'index' => [
+              'analysis' => [
+                  'analyzer' => [
+                      'autocomplete' => [
+                          'tokenizer' => 'autocomplete',
+                          'filter' => [
+                              'lowercase',
+                          ],
+                      ],
+                      'autocomplete_search' => [
+                          'tokenizer' => 'lowercase',
+                      ],
+                  ],
+                  'tokenizer' => [
+                      'autocomplete' => [
+                          'type' => 'edge_ngram',
+                          'min_gram' => 1,
+                          'max_gram' => 15,
+                          'token_chars' => [
+                              'letter'
+                          ]
+                      ]
+                  ]
+              ],
+          ],
+      ];
+    }
+ ```
