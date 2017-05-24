@@ -9,6 +9,7 @@
 namespace ElasticScout;
 
 use Elasticsearch\Client as Elasticsearch;
+use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 
@@ -60,12 +61,61 @@ class ElasticEngine
             ]);
 
             $body->push($array);
+
+            if($this->indexExistsFor($model) === false && (method_exists($model, 'settings') || method_exists($model, 'aliases') || method_exists($model, 'mappings'))) {
+                $this->createIndex($model);
+            }
+
         });
 
         $this->elasticsearch->bulk([
             'refresh' => true,
             'body' => $body->all(),
         ]);
+    }
+
+    /**
+     * Check to see if the index exists
+     *
+     * @param $model
+     * @return bool
+     */
+    protected function indexExistsFor($model)
+    {
+        $params['index'] = $model->searchableAs();
+        return $this->elasticsearch->indices()->exists($params);
+    }
+
+    /**
+     * Create the index, putting mappings, settings, and aliases
+     *
+     * @param $model
+     * @return bool
+     * @throws ClientErrorResponseException
+     */
+    protected function createIndex($model)
+    {
+        $params['index'] = $model->searchableAs();
+
+        if(method_exists($model,'settings')) {
+            $params['body']['settings'] = $model->settings();
+        }
+
+        if(method_exists($model,'mappings')) {
+            $params['body']['mappings'] = $model->mappings();
+        }
+
+        if(method_exists($model, 'aliases')) {
+            $params['body']['aliases'] = $model->aliases();
+        }
+
+        $response = $this->elasticsearch->indices()->create($params);
+
+        if(!empty($response['acknowledged'])) {
+            return true;
+        }
+
+        throw new ClientErrorResponseException('Failed to create index for an unknown reason');
     }
 
     /**
@@ -162,6 +212,8 @@ class ElasticEngine
             ]);
         }
 
+//        dd($search);
+
         return $this->elasticsearch->search($search);
     }
 
@@ -210,8 +262,20 @@ class ElasticEngine
         )->get()->keyBy($model->getKeyName());
 
         return Collection::make($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
-            return isset($models[$hit['_source'][$model->getKeyName()]])
-                ? $models[$hit['_source'][$model->getKeyName()]] : null;
+
+            if(isset($models[$hit['_source'][$model->getKeyName()]])) {
+
+                $newModel = $models[$hit['_source'][$model->getKeyName()]];
+
+                if(!empty($hit['sort'])) {
+                    $newModel->addSorting($hit['sort']);
+                }
+
+                return $newModel;
+            }
+
+            return null;
+
         })->filter()->values();
     }
 
