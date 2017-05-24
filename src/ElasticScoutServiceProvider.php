@@ -10,8 +10,8 @@ namespace ElasticScout;
 
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
-use Laravel\Scout\Builder;
-use ElasticScout\Builder as ElasticBuilder;
+use ElasticScout\Generators\DSL;
+use ElasticScout\Generators\Agg;
 use Elasticsearch;
 
 class ElasticScoutServiceProvider extends ServiceProvider
@@ -28,8 +28,13 @@ class ElasticScoutServiceProvider extends ServiceProvider
             return new ElasticEngine($client);
         });
 
-//        extend(Builder::class, function() {
-//           return new ElasticBuilder($model,);
-//        });
+        app()->singleton('ElasticScout\Generators\DSL',function() {
+            return new DSL;
+        });
+
+        app()->singleton('ElasticScout\Generators\Agg',function() {
+            return new Agg;
+        });
+
     }
 }

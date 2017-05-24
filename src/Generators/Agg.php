@@ -6,13 +6,13 @@
  * Time: 1:48 PM
  */
 
-namespace ElasticScout;
+namespace ElasticScout\Generators;
 
 /**
  * Class Aggregation
  * @package ElasticScout
  */
-class Aggregation
+class Agg
 {
 
     /**

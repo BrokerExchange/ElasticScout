@@ -211,7 +211,7 @@ class ElasticEngine
                 'from' => $options['from'],
             ]);
         }
-        
+
         return $this->elasticsearch->search($search);
     }
 
