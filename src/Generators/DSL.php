@@ -346,14 +346,16 @@ class DSL
 
     /**
      * @param array $functions
+     * @param array $query
      * @return array
      */
-    public function function_score($functions=[])
+    public function function_score($functions=[],$query=[])
     {
         return [
-            'function_score' => [
+            'function_score' => array_filter([
+                'query' => $query,
                 'functions' => $functions
-            ]
+            ])
         ];
     }
 
