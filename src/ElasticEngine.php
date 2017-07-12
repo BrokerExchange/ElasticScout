@@ -12,6 +12,7 @@ use Elasticsearch\Client as Elasticsearch;
 use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class ElasticEngine
@@ -45,6 +46,13 @@ class ElasticEngine
     {
         $body = new BaseCollection();
 
+        // grab the first model and check it out
+        $firstModel = $models->first();
+	    if($this->indexExistsFor($firstModel) === false && (method_exists($firstModel, 'settings') || method_exists($firstModel, 'aliases') || method_exists($firstModel, 'mappings'))) {
+		    $this->createIndex($firstModel);
+	    }
+
+        // iterate over all models and push onto a bulk stack...
         $models->each(function ($model) use ($body) {
             $array = $model->toSearchableArray();
 
@@ -61,17 +69,44 @@ class ElasticEngine
             ]);
 
             $body->push($array);
-
-            if($this->indexExistsFor($model) === false && (method_exists($model, 'settings') || method_exists($model, 'aliases') || method_exists($model, 'mappings'))) {
-                $this->createIndex($model);
-            }
-
         });
 
-        $this->elasticsearch->bulk([
+        $response = $this->elasticsearch->bulk([
             'refresh' => true,
             'body' => $body->all(),
         ]);
+        if(!empty($response['errors'])){
+	        $errors = $this->errors($response['items'],$models);
+	        Log::error('ElasticEngine::update - errors',$errors);
+        }
+    }
+
+	/**
+	 * @param Array       $items
+	 * @param Collection $models
+	 *
+	 * @return array
+	 */
+    public function errors($items, Collection $models){
+	    $errors = [];
+	    foreach($items as $key=>$es_result){
+	    	if(!empty($es_result['index']['error'])){
+			    Log::error('ElasticEngine::errors',$es_result['index']['error']);
+			    if(empty($errors[$es_result['index']['error']['type']])){
+			    	// save the error, id, and example from the first instance...
+				    $errors[$es_result['index']['error']['type']] = [
+				    	'reason'=>$es_result['index']['error']['reason'],
+					    'id'=>[$key],
+					    'count' => 1,
+					    'example' => $models->find($key)
+				    ];
+			    } else {
+				    $errors[$es_result['index']['error']['type']]['id'][] = $key;
+				    $errors[$es_result['index']['error']['type']]['count']++;
+			    }
+		    }
+	    }
+	    return $errors;
     }
 
     /**
@@ -108,8 +143,7 @@ class ElasticEngine
         if(method_exists($model, 'aliases')) {
             $params['body']['aliases'] = $model->aliases();
         }
-
-        $response = $this->elasticsearch->indices()->create($params);
+	    $response = $this->elasticsearch->indices()->create($params);
 
         if(!empty($response['acknowledged'])) {
             return true;
@@ -138,10 +172,14 @@ class ElasticEngine
             ]);
         });
 
-        $this->elasticsearch->bulk([
+	    $response = $this->elasticsearch->bulk([
             'refresh' => true,
             'body' => $body->all(),
         ]);
+	    if(!empty($response['errors'])){
+		    $errors = $this->errors($response['items'],$models);
+		    Log::error('ElasticEngine::update - errors',$errors);
+	    }
     }
 
     /**
