@@ -24,6 +24,9 @@
     "elasticsearch/elasticsearch": "^5.0.0",
     "laravel/scout": "^3.0"
   },
+  "require-dev": {
+    "monolog/monolog": "^1.23"
+  },
   "autoload": {
     "psr-4": {
       "ElasticScout\\": "src/"
