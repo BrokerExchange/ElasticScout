@@ -249,6 +249,12 @@ class ElasticEngine
                 'from' => $options['from'],
             ]);
         }
+		
+		if (!empty($query->model->highlight)){
+			foreach ($query->model->highlight as $attribute) {
+                $search['highlight']['fields'][$attribute] = new \stdClass();
+            }
+		}
         
         return $this->elasticsearch->search($search);
     }
