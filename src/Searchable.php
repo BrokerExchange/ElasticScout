@@ -13,7 +13,6 @@ trait Searchable
 {
     use \Laravel\Scout\Searchable;
 
-	public $highlight;
     /**
      * @var array
      */
