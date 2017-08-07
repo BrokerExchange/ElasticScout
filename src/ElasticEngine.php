@@ -252,10 +252,10 @@ class ElasticEngine
 		
 		if (!empty($query->model->highlight)){
 			foreach ($query->model->highlight as $attribute) {
-                $search['highlight']['fields'][$attribute] = new \stdClass();
+                $search['body']['highlight']['fields'][$attribute] = new \stdClass();
             }
 		}
-        
+
         return $this->elasticsearch->search($search);
     }
 
@@ -311,6 +311,11 @@ class ElasticEngine
 
                 if(!empty($hit['sort'])) {
                     $newModel->addSorting($hit['sort']);
+                }
+
+                //设置高亮数据
+                if (isset($hit['highlight'])) {
+                    $newModel->highlight = $hit['highlight'];
                 }
 
                 return $newModel;
