@@ -10,7 +10,7 @@ namespace ElasticScout;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class Builder
@@ -27,6 +27,8 @@ class Builder extends \Laravel\Scout\Builder
      * @var array
      */
     protected $aggregations = [];
+
+    protected $post_filter = [];
 
     /**
      * @var string
@@ -96,6 +98,7 @@ class Builder extends \Laravel\Scout\Builder
         return array_filter([
             'query' => $this->dsl,
             'aggregations' => $this->aggregations(),
+            'post_filter' => $this->post_filter,
         ]);
     }
 
@@ -186,6 +189,15 @@ class Builder extends \Laravel\Scout\Builder
     {
         if(count($filter)) {
             $this->dsl[$this->combo]['filter'][] = $filter;
+        }
+
+        return $this;
+    }
+
+    public function post_filter(Array $filter)
+    {
+        if(count($filter)) {
+            $this->post_filter = array_merge($this->post_filter,$filter);
         }
 
         return $this;

@@ -313,7 +313,6 @@ class ElasticEngine
                     $newModel->addSorting($hit['sort']);
                 }
 
-                //设置高亮数据
                 if (isset($hit['highlight'])) {
                     $newModel->highlight = $hit['highlight'];
                 }
