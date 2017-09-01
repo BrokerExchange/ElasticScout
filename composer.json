@@ -17,11 +17,15 @@
     {
       "name": "Jen Page",
       "email": "jpage@brokerbin.com"
+    },
+    {
+      "name": "Charles Peterson",
+      "email": "cpeterson@brokerbin.com"
     }
   ],
   "minimum-stability": "stable",
   "require": {
-    "elasticsearch/elasticsearch": "^5.0.0",
+    "elasticsearch/elasticsearch": "^5.3",
     "laravel/scout": "^3.0"
   },
   "require-dev": {
@@ -30,6 +34,20 @@
   "autoload": {
     "psr-4": {
       "ElasticScout\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "6.0.x-dev"
+    },
+    "laravel": {
+      "providers": [
+        "ElasticScout\\ElasticScoutServiceProvider"
+      ],
+      "aliases": {
+        "Agg": "ElasticScout\\Facades\\Agg",
+        "DSL": "ElasticScout\\Fadades\\DSL"
+      }
     }
   }
 }

@@ -47,26 +47,11 @@ trait Searchable
      *
      * @param  string  $query
      * @param  \Closure  $callback
-     * @return \Laravel\Scout\Builder
+     * @return Builder
      */
     public static function search($query = null, $callback = null)
     {
         return new Builder(new static, $query, $callback);
     }
 
-    /**
-     * @param $sort
-     */
-    public function addSorting($sort)
-    {
-        $this->sorting = $sort;
-    }
-
-    /**
-     * @return array
-     */
-    public function sorting()
-    {
-        return $this->sorting;
-    }
 }
