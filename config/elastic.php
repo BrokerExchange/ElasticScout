@@ -7,7 +7,5 @@
  */
 
 return [
-    'elastic' => [
-        'hosts' => explode(',',env('ELASTICSEARCH_HOST','localhost:9200'))
-    ]
+    'hosts' => explode(',',env('ELASTICSEARCH_HOST','localhost:9200'))
 ];

@@ -24,7 +24,7 @@ class ElasticScoutServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/elastic.php', 'elastic'
+            __DIR__.'/../config/elastic.php', 'scout.elasatic'
         );
 
         resolve(EngineManager::class)->extend('elastic', function () {

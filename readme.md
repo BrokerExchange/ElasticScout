@@ -19,24 +19,19 @@ ElasticScout is released under the MIT Open Source License, <https://opensource.
 ElasticScout &copy; Broker Exchange Network
 
 ## Installation
- * run composer require command
+ * Run composer require command
  `composer require brokerexchange\elasticscout`
- * Add Provider to config/app.php
- ```php
-    ElasticScout\ElasticScoutServiceProvider::class,
- ```
  * Set default scout driver to "elastic" in .env file
  ```env
     SCOUT_DRIVER=elastic
  ```
+ * Configure Elasticsearch Host (default: localhost:9200)
+ ```env
+    ELASTICSEARCH_HOST='elastic1.host.com:9200,elastic2.host.com:9200'
+ ```
  * Add trait to desired model
  ```php
     use ElasticScout\Searchable;
- ```
- * Add Facades to Alias list in config/app.php
- ```php
-         'DSL'          => ElasticScout\Facades\Dsl::class,
-         'Agg'          => Elasticscout\Facades\Agg::class,
  ```
  
 ## Usage
@@ -50,7 +45,7 @@ ElasticScout &copy; Broker Exchange Network
         ->aggregate(Agg::terms('categories', 'category.name'));
     
     //retrieve aggregation results
-    $categories = $search->aggregations('categories');
+    $categories = $search->aggregation('categories');
     
     //fire the search
     $results = $search->paginate();
