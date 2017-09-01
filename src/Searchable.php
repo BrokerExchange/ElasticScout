@@ -14,11 +14,8 @@ trait Searchable
     use \Laravel\Scout\Searchable;
 
     /**
-     * @var array
-     */
-    protected $sorting = [];
-
-    /**
+     * Elasticsearch type to be used within Elasticsearch index
+     *
      * @return string
      */
     public function SearchableType()
@@ -27,6 +24,7 @@ trait Searchable
     }
 
     /**
+     * return a fresh instance of agg
      * @return Agg
      */
     public function agg()
@@ -35,6 +33,8 @@ trait Searchable
     }
 
     /**
+     * return a fresh instance of dsl
+     *
      * @return DSL
      */
     public function dsl()
