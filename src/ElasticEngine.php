@@ -83,6 +83,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     }
 
 	/**
+     * Log individual document index errors
+     *
 	 * @param Array       $items
 	 * @param Collection $models
 	 *
@@ -255,6 +257,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     }
 
     /**
+     * return sorting array
+     *
      * @param Builder $query
      * @return array
      */

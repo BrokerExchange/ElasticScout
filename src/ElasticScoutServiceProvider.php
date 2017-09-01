@@ -43,11 +43,5 @@ class ElasticScoutServiceProvider extends ServiceProvider
         app()->singleton('ElasticScout\Generators\Agg',function() {
             return new Agg;
         });
-
-        $this->publishes([
-            __DIR__.'/../config/elastic.php' => $this->app['path.config'].DIRECTORY_SEPARATOR.'elastic.php',
-        ]);
-
-
     }
 }
