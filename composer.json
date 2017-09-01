@@ -17,6 +17,10 @@
     {
       "name": "Jen Page",
       "email": "jpage@brokerbin.com"
+    },
+    {
+      "name": "Charles Peterson",
+      "email": "cpeterson@brokerbin.com"
     }
   ],
   "minimum-stability": "stable",
