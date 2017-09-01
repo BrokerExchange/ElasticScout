@@ -95,7 +95,7 @@ class Builder extends \Laravel\Scout\Builder
     {
         return array_filter([
             'query' => $this->dsl,
-            'aggregations' => $this->aggregations(),
+            'aggregations' => $this->aggregations,
         ]);
     }
 
@@ -103,23 +103,13 @@ class Builder extends \Laravel\Scout\Builder
      * @param null $key
      * @return mixed
      */
-    public function aggregations($key = null)
+    public function aggregation($key = null)
     {
         if(!empty($key) && isset($this->aggregations[$key]) && isset($this->aggregations[$key]['buckets'])) {
             return Collection::make($this->aggregations[$key]['buckets']);
         }
 
-        return $this->aggregations;
-    }
-
-    /**
-     * @param array $aggs
-     */
-    public function aggs(Array $aggs)
-    {
-        if(!empty($aggs)) {
-            $this->aggregations = $aggs;
-        }
+        return null;
     }
 
     /**

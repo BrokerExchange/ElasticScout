@@ -13,12 +13,13 @@ use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Log;
+use Laravel\Scout\Builder;
 
 /**
  * Class ElasticEngine
  * @package ElasticScout
  */
-class ElasticEngine
+class ElasticEngine extends \Laravel\Scout\Engines\Engine
 {
     /**
      * The Elasticsearch client instance.

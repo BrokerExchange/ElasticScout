@@ -20,9 +20,9 @@
     }
   ],
   "minimum-stability": "stable",
-  "require": {
-    "elasticsearch/elasticsearch": "^5.0.0",
-    "laravel/scout": "^3.0"
+  "suggests": {
+    "elasticsearch/elasticsearch": "Official Elasticsearch Client",
+    "laravel/scout": "Laravel Official Fulltext Search Package"
   },
   "require-dev": {
     "monolog/monolog": "^1.23"
@@ -30,6 +30,17 @@
   "autoload": {
     "psr-4": {
       "ElasticScout\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "ElasticScout\\ElasticScoutServiceProvider"
+      ],
+      "aliases": {
+        "Agg": "ElasticScout\\Facades\\Agg",
+        "DSL": "ElasticScout\\Fadades\\DSL"
+      }
     }
   }
 }
