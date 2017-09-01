@@ -32,7 +32,7 @@ class ElasticScoutServiceProvider extends ServiceProvider
             return new ElasticEngine($client);
         });
 
-        app()->bind(Laravel\Scout\Builder::class, function($model, $query, $callback = null) {
+        app()->bind(\Laravel\Scout\Builder::class, function($model, $query, $callback = null) {
             return new Builder($model, $query, $callback);
         });
 
