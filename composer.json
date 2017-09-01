@@ -21,8 +21,10 @@
   ],
   "minimum-stability": "stable",
   "suggests": {
-    "elasticsearch/elasticsearch": "Official Elasticsearch Client",
     "laravel/scout": "Laravel Official Fulltext Search Package"
+  },
+  "require": {
+    "elasticsearch/elasticsearch": "^5.3"
   },
   "require-dev": {
     "monolog/monolog": "^1.23"
