@@ -10,7 +10,7 @@ namespace ElasticScout;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
+use \Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class Builder
