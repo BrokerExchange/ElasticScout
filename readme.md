@@ -8,7 +8,7 @@
 A [Laravel Scout](https://github.com/laravel/scout) Driver for Elasticsearch 5.x
 
 ## Overview
-ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds additional functionality.
+ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds new functionality.
 
 The ElasticScout engine includes an Elasticsearch Query Builder which can be used to create elaborate custom queries and aggregations, allowing full use of Elasticsearch within the Laravel/Scout Paradigm.
 
@@ -51,7 +51,7 @@ ElasticScout &copy; Broker Exchange Network
     $results = $search->paginate();
  ```
 ## Mappings
- You can set a custom mapping by simply defining a "mapping" method on your model.
+ You may set a custom mapping by simply defining a "mapping" method on your model.
  
  ```php
     public function mappings()
@@ -79,7 +79,7 @@ ElasticScout &copy; Broker Exchange Network
  ```
  
  ## Settings
-  You can create custom settings and alalyzers by creating a "settings" method on the model.
+  You may create custom settings and analyzers by creating a "settings" method on the model.
   
  ```php
     public function settings()
