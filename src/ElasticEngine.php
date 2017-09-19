@@ -196,6 +196,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
         return $this->performSearch($query, [
             'orders' => $this->orders($query),
             'size' => $query->limit ?: 10000,
+            'highlight' => $this->highlights($query),
         ]);
     }
 
@@ -213,6 +214,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             'orders' => $this->orders($query),
             'size' => $perPage,
             'from' => (($page * $perPage) - $perPage),
+            'highlight' => $this->highlights($query),
         ]);
 
         $result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
@@ -253,9 +255,9 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             ]);
         }
 		
-		if (!empty($query->model->highlight)){
-			foreach ($query->model->highlight as $attribute) {
-                $search['body']['highlight']['fields'][$attribute] = new \stdClass();
+		if (array_key_exists('highlight', $options)){
+			foreach ($options['highlight'] as $field) {
+                $search['body']['highlight']['fields'][$field] = new \stdClass();
             }
 		}
 
@@ -273,6 +275,17 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
         return collect($query->orders)->mapWithKeys(function($sort) {
             return [$sort['column'] => $sort['direction']];
         })->all();
+    }
+
+    /**
+     * return highlights from query builder first or by model field second
+     *
+     * @param Builder $query
+     * @return mixed
+     */
+    protected function highlights(Builder $query)
+    {
+        return !empty($query->highlights) ? $query->highlights : $query->model->highlights;
     }
 
     /**
@@ -361,12 +374,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     public function get(Builder $builder)
     {
         $results = Collection::make($this->map(
-            $rawResults = $this->search($builder), $builder->model
+            $this->search($builder), $builder->model
         ));
-
-        if(!empty($rawResults['aggregations'])) {
-            $builder->aggs($rawResults['aggregations']);
-        }
 
         return $results;
     }

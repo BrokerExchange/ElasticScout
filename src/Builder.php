@@ -31,7 +31,17 @@ class Builder extends \Laravel\Scout\Builder
      */
     protected $aggregations = [];
 
+    /**
+     * holds raw post filters
+     * @var array
+     */
     protected $post_filter = [];
+
+    /**
+     * holds raw highlights
+     * @var array
+     */
+    protected $highlights = [];
 
     /**
      * the specified combo query
@@ -207,6 +217,12 @@ class Builder extends \Laravel\Scout\Builder
         return $this;
     }
 
+    /**
+     * add filter to post filters
+     *
+     * @param array $filter
+     * @return $this
+     */
     public function post_filter(Array $filter)
     {
         if(count($filter)) {
@@ -214,6 +230,16 @@ class Builder extends \Laravel\Scout\Builder
         }
 
         return $this;
+    }
+
+    /**
+     * @param array $fields
+     */
+    public function highlight(Array $fields)
+    {
+        if(count($fields)) {
+            $this->highlights = array_merge($this->highlights,$fields);
+        }
     }
 
     /**
