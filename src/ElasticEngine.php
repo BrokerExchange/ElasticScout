@@ -252,7 +252,13 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
                 'from' => $options['from'],
             ]);
         }
-        
+		
+		if (!empty($query->model->highlight)){
+			foreach ($query->model->highlight as $attribute) {
+                $search['body']['highlight']['fields'][$attribute] = new \stdClass();
+            }
+		}
+
         return $this->elasticsearch->search($search);
     }
 
@@ -310,6 +316,10 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
 
                 if(!empty($hit['sort'])) {
                     $newModel->addSorting($hit['sort']);
+                }
+
+                if (isset($hit['highlight'])) {
+                    $newModel->highlight = $hit['highlight'];
                 }
 
                 return $newModel;

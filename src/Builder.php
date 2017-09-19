@@ -31,6 +31,8 @@ class Builder extends \Laravel\Scout\Builder
      */
     protected $aggregations = [];
 
+    protected $post_filter = [];
+
     /**
      * the specified combo query
      *
@@ -105,6 +107,7 @@ class Builder extends \Laravel\Scout\Builder
         return array_filter([
             'query' => $this->dsl,
             'aggregations' => $this->aggregations,
+            'post_filter' => $this->post_filter,
         ]);
     }
 
@@ -199,6 +202,15 @@ class Builder extends \Laravel\Scout\Builder
     {
         if(count($filter)) {
             $this->dsl[$this->combo]['filter'][] = $filter;
+        }
+
+        return $this;
+    }
+
+    public function post_filter(Array $filter)
+    {
+        if(count($filter)) {
+            $this->post_filter = array_merge($this->post_filter,$filter);
         }
 
         return $this;
