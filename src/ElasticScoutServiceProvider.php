@@ -23,9 +23,17 @@ class ElasticScoutServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/elastic.php', 'scout.elasatic'
+        );
+
         resolve(EngineManager::class)->extend('elastic', function () {
-            $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('scout.elastic.hosts',['localhost:9200']))->build();
+            $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('elastic.hosts',['localhost:9200']))->build();
             return new ElasticEngine($client);
+        });
+
+        app()->bind(\Laravel\Scout\Builder::class, function($model, $query, $callback = null) {
+            return new Builder($model, $query, $callback);
         });
 
         app()->singleton('ElasticScout\Generators\DSL',function() {
@@ -35,6 +43,5 @@ class ElasticScoutServiceProvider extends ServiceProvider
         app()->singleton('ElasticScout\Generators\Agg',function() {
             return new Agg;
         });
-
     }
 }

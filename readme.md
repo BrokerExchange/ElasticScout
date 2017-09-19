@@ -8,7 +8,7 @@
 A [Laravel Scout](https://github.com/laravel/scout) Driver for Elasticsearch 5.x
 
 ## Overview
-ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds additional functionality.
+ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds new functionality.
 
 The ElasticScout engine includes an Elasticsearch Query Builder which can be used to create elaborate custom queries and aggregations, allowing full use of Elasticsearch within the Laravel/Scout Paradigm.
 
@@ -19,24 +19,19 @@ ElasticScout is released under the MIT Open Source License, <https://opensource.
 ElasticScout &copy; Broker Exchange Network
 
 ## Installation
- * run composer require command
+ * Run composer require command
  `composer require brokerexchange\elasticscout`
- * Add Provider to config/app.php
- ```php
-    ElasticScout\ElasticScoutServiceProvider::class,
- ```
  * Set default scout driver to "elastic" in .env file
  ```env
     SCOUT_DRIVER=elastic
  ```
+ * Configure Elasticsearch Host (default: localhost:9200)
+ ```env
+    ELASTICSEARCH_HOST='elastic1.host.com:9200,elastic2.host.com:9200'
+ ```
  * Add trait to desired model
  ```php
     use ElasticScout\Searchable;
- ```
- * Add Facades to Alias list in config/app.php
- ```php
-         'DSL'          => ElasticScout\Facades\Dsl::class,
-         'Agg'          => Elasticscout\Facades\Agg::class,
  ```
  
 ## Usage
@@ -50,13 +45,13 @@ ElasticScout &copy; Broker Exchange Network
         ->aggregate(Agg::terms('categories', 'category.name'));
     
     //retrieve aggregation results
-    $categories = $search->aggregations('categories');
+    $categories = $search->aggregation('categories');
     
     //fire the search
     $results = $search->paginate();
  ```
 ## Mappings
- You can set a custom mapping by simply defining a "mapping" method on your model.
+ You may set a custom mapping by simply defining a "mapping" method on your model.
  
  ```php
     public function mappings()
@@ -84,7 +79,7 @@ ElasticScout &copy; Broker Exchange Network
  ```
  
  ## Settings
-  You can create custom settings and alalyzers by creating a "settings" method on the model.
+  You may create custom settings and analyzers by creating a "settings" method on the model.
   
  ```php
     public function settings()

@@ -14,11 +14,8 @@ trait Searchable
     use \Laravel\Scout\Searchable;
 
     /**
-     * @var array
-     */
-    protected $sorting = [];
-
-    /**
+     * Elasticsearch type to be used within Elasticsearch index
+     *
      * @return string
      */
     public function SearchableType()
@@ -27,6 +24,7 @@ trait Searchable
     }
 
     /**
+     * return a fresh instance of agg
      * @return Agg
      */
     public function agg()
@@ -35,6 +33,8 @@ trait Searchable
     }
 
     /**
+     * return a fresh instance of dsl
+     *
      * @return DSL
      */
     public function dsl()
@@ -47,26 +47,11 @@ trait Searchable
      *
      * @param  string  $query
      * @param  \Closure  $callback
-     * @return \Laravel\Scout\Builder
+     * @return Builder
      */
     public static function search($query = null, $callback = null)
     {
         return new Builder(new static, $query, $callback);
     }
 
-    /**
-     * @param $sort
-     */
-    public function addSorting($sort)
-    {
-        $this->sorting = $sort;
-    }
-
-    /**
-     * @return array
-     */
-    public function sorting()
-    {
-        return $this->sorting;
-    }
 }

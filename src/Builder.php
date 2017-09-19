@@ -19,11 +19,14 @@ use Illuminate\Database\Eloquent\Collection;
 class Builder extends \Laravel\Scout\Builder
 {
     /**
+     * holds the raw query language
+     *
      * @var array
      */
     protected $dsl = [];
 
     /**
+     * holds raw query aggregations
      * @var array
      */
     protected $aggregations = [];
@@ -31,11 +34,15 @@ class Builder extends \Laravel\Scout\Builder
     protected $post_filter = [];
 
     /**
+     * the specified combo query
+     *
      * @var string
      */
     protected $combo = '';
 
     /**
+     * execute query and paginate results
+     *
      * @param null $perPage
      * @param string $pageName
      * @param null $page
@@ -91,41 +98,37 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * return raw query dsl
+     *
      * @return mixed
      */
     public function dsl()
     {
         return array_filter([
             'query' => $this->dsl,
-            'aggregations' => $this->aggregations(),
+            'aggregations' => $this->aggregations,
             'post_filter' => $this->post_filter,
         ]);
     }
 
     /**
+     * retrieve aggregation result
+     *
      * @param null $key
      * @return mixed
      */
-    public function aggregations($key = null)
+    public function aggregation($key = null)
     {
         if(!empty($key) && isset($this->aggregations[$key]) && isset($this->aggregations[$key]['buckets'])) {
             return Collection::make($this->aggregations[$key]['buckets']);
         }
 
-        return $this->aggregations;
+        return null;
     }
 
     /**
-     * @param array $aggs
-     */
-    public function aggs(Array $aggs)
-    {
-        if(!empty($aggs)) {
-            $this->aggregations = $aggs;
-        }
-    }
-
-    /**
+     * add aggregation to query
+     *
      * @param $agg
      * @return $this
      */
@@ -136,6 +139,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * return query DSL as json
+     *
      * @return string
      */
     public function toJson()
@@ -144,6 +149,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * set query raw query dsl
+     *
      * @param array $query
      * @return $this
      */
@@ -157,6 +164,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add boolean combo query
+     *
      * @param int $boost
      * @param int $minimum_should_match
      * @return $this
@@ -169,6 +178,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add must to combo query
+     *
      * @param $query
      * @return $this
      */
@@ -182,6 +193,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add filter to combo query
+     *
      * @param $filter
      * @return $this
      */
@@ -204,6 +217,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add should to combo query
+     *
      * @param $query
      * @return $this
      */
@@ -217,6 +232,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add dis_max combo query
+     *
      * @param int $boost
      */
     public function dis_max($boost = 0)
@@ -226,6 +243,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add queries to combo query
+     *
      * @param array $queries
      * @return $this
      */
@@ -239,6 +258,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add boosting combo query
+     *
      * @param int $negative_boost
      */
     public function boosting($negative_boost = 0)
@@ -248,6 +269,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add positive to combo query
+     *
      * @param $query
      * @return $this
      */
@@ -261,6 +284,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add negative to combo query
+     *
      * @param $query
      * @return $this
      */
@@ -274,6 +299,8 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add constant_score combo query
+     *
      * @param int $boost
      */
     public function constant_score($boost = 0)
