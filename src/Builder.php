@@ -254,6 +254,16 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * get highlights
+     *
+     * @return array
+     */
+    public function highlights()
+    {
+        return $this->highlights;
+    }
+
+    /**
      * add should to combo query
      *
      * @param $query

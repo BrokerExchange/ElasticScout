@@ -76,6 +76,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             'refresh' => true,
             'body' => $body->all(),
         ]);
+
         if(!empty($response['errors'])){
 	        $errors = $this->errors($response['items'],$models);
 	        Log::error('ElasticEngine::update - errors',$errors);
@@ -255,7 +256,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             ]);
         }
 		
-		if (array_key_exists('highlight', $options)){
+		if (array_key_exists('highlight', $options) && !empty($options['highlight'])){
 			foreach ($options['highlight'] as $field) {
                 $search['body']['highlight']['fields'][$field] = new \stdClass();
             }
@@ -287,11 +288,19 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
      * return highlights from query builder first or by model field second
      *
      * @param Builder $query
-     * @return mixed
+     * @return array
      */
     protected function highlights(Builder $query)
     {
-        return !empty($query->highlights) ? $query->highlights : $query->model->highlights;
+        $highlights = null;
+
+        if(!empty($query->highlights())) {
+            $highlights = $query->highlights();
+        } elseif(!empty($query->model->highlights)) {
+            $highlights = $query->model->highlights;
+        }
+
+        return $highlights;
     }
 
     /**
@@ -334,7 +343,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
                 $newModel = $models[$hit['_source'][$model->getKeyName()]];
 
                 if(!empty($hit['sort'])) {
-                    $newModel->addSorting($hit['sort']);
+                    $newModel->sorting = $hit['sort'];
                 }
 
                 if (isset($hit['highlight'])) {

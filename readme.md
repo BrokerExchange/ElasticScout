@@ -43,12 +43,12 @@ ElasticScout &copy; Broker Exchange Network
         ->should(DSL::match('body',$request->input('query')))
         ->filter(DSL::term('published', 1))
         ->aggregate(Agg::terms('categories', 'category.name'));
-    
+        
+    //fire the search
+    $articles = $search->paginate();
+        
     //retrieve aggregation results
     $categories = $search->aggregation('categories');
-    
-    //fire the search
-    $results = $search->paginate();
  ```
 ## Mappings
  You may set a custom mapping by simply defining a "mapping" method on your model.
