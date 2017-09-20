@@ -182,7 +182,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
         ]);
 	    if(!empty($response['errors'])){
 		    $errors = $this->errors($response['items'],$models);
-		    Log::error('ElasticEngine::update - errors',$errors);
+		    Log::error('ElasticEngine::delete - errors',$errors);
 	    }
     }
 
@@ -195,9 +195,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     public function search(Builder $query)
     {
         return $this->performSearch($query, [
-            'orders' => $this->orders($query),
             'size' => $query->limit ?: 10000,
-            'highlight' => $this->highlights($query),
         ]);
     }
 
@@ -212,10 +210,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     public function paginate(Builder $query, $perPage, $page)
     {
         $result = $this->performSearch($query, [
-            'orders' => $this->orders($query),
             'size' => $perPage,
             'from' => (($page * $perPage) - $perPage),
-            'highlight' => $this->highlights($query),
         ]);
 
         $result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
@@ -244,22 +240,22 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             ]);
         }
 
-        if (array_key_exists('orders', $options)) {
-            $search['body'] = array_merge($search['body'], [
-                'sort' => $options['orders'],
-            ]);
-        }
-
         if (array_key_exists('from', $options)) {
             $search = array_merge($search, [
                 'from' => $options['from'],
             ]);
         }
+
+        if (!empty($orders = $this->orders($query))) {
+            $search['body'] = array_merge($search['body'], [
+                'sort' => $orders,
+            ]);
+        }
 		
-		if (array_key_exists('highlight', $options) && !empty($options['highlight'])){
-			foreach ($options['highlight'] as $field) {
-                $search['body']['highlight']['fields'][$field] = new \stdClass();
-            }
+		if (!empty($highlights = $this->highlights($query))) {
+            $search['body'] = array_merge($search['body'], [
+                'highlight' => ['fields' => $highlights],
+            ]);
 		}
 
         $results = $this->elasticsearch->search($search);
@@ -280,7 +276,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     protected function orders(Builder $query)
     {
         return collect($query->orders)->mapWithKeys(function($sort) {
-            return [$sort['column'] => $sort['direction']];
+            return [ $sort['column'] => $sort['direction'] ];
         })->all();
     }
 
@@ -292,7 +288,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
      */
     protected function highlights(Builder $query)
     {
-        $highlights = null;
+        $highlights = [];
 
         if(!empty($query->highlights())) {
             $highlights = $query->highlights();
@@ -300,7 +296,11 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             $highlights = $query->model->highlights;
         }
 
-        return $highlights;
+       return collect($highlights)->mapWithKeys(function ($field) {
+            return [
+                $field => new \stdClass,
+            ];
+        })->all();
     }
 
     /**

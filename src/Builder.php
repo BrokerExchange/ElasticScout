@@ -114,6 +114,7 @@ class Builder extends \Laravel\Scout\Builder
             'query' => $this->dsl,
             'aggregations' => $this->aggregations,
             'post_filter' => $this->post_filter,
+            'highlight' => $this->highlights,
         ]);
     }
 
