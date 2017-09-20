@@ -46,7 +46,7 @@
       ],
       "aliases": {
         "Agg": "ElasticScout\\Facades\\Agg",
-        "DSL": "ElasticScout\\Fadades\\DSL"
+        "DSL": "ElasticScout\\Facades\\DSL"
       }
     }
   }
