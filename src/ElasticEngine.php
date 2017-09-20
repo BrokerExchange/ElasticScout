@@ -379,10 +379,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
      */
     public function get(Builder $query)
     {
-        $results = Collection::make($this->map(
-            $rawResults = $this->search($query), $query->model
+        return Collection::make($this->map(
+            $this->search($builder), $builder->model
         ));
-
-        return $results;
     }
 }
