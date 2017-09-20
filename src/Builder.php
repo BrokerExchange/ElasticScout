@@ -71,10 +71,6 @@ class Builder extends \Laravel\Scout\Builder
 
         ));
 
-        if(!empty($rawResults['aggregations'])) {
-            $this->aggregations = $rawResults['aggregations'];
-        }
-
         $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [
             'path' => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
@@ -134,6 +130,16 @@ class Builder extends \Laravel\Scout\Builder
         }
 
         return null;
+    }
+
+    /**
+     * set aggregations
+     *
+     * @param array $aggregations
+     */
+    public function aggregations(Array $aggregations)
+    {
+        $this->aggregations = $aggregations;
     }
 
     /**
@@ -233,13 +239,18 @@ class Builder extends \Laravel\Scout\Builder
     }
 
     /**
+     * add highlight to query
+     *
      * @param array $fields
+     * @return $this
      */
     public function highlight(Array $fields)
     {
         if(count($fields)) {
             $this->highlights = array_merge($this->highlights,$fields);
         }
+
+        return $this;
     }
 
     /**

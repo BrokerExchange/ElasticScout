@@ -261,7 +261,13 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             }
 		}
 
-        return $this->elasticsearch->search($search);
+        $results = $this->elasticsearch->search($search);
+
+        if(!empty($results['aggregations'])) {
+            $query->aggregations($results['aggregations']);
+        }
+
+		return $results;
     }
 
     /**
@@ -357,24 +363,24 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     /**
      * Get the results of the query as a Collection of primary keys.
      *
-     * @param  Builder  $builder
+     * @param  Builder  $query
      * @return \Illuminate\Support\Collection
      */
-    public function keys(Builder $builder)
+    public function keys(Builder $query)
     {
-        return $this->mapIds($this->search($builder));
+        return $this->mapIds($this->search($query));
     }
 
     /**
      * Get the results of the given query mapped onto models.
      *
-     * @param  Builder  $builder
+     * @param  Builder  $query
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function get(Builder $builder)
+    public function get(Builder $query)
     {
         $results = Collection::make($this->map(
-            $this->search($builder), $builder->model
+            $rawResults = $this->search($query), $query->model
         ));
 
         return $results;
