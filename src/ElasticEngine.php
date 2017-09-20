@@ -380,7 +380,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     public function get(Builder $query)
     {
         return Collection::make($this->map(
-            $this->search($builder), $builder->model
+            $this->search($query), $query->model
         ));
     }
 }
