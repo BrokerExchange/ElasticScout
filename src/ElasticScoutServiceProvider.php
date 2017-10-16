@@ -1,19 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: bmix
- * Date: 11/3/16
- * Time: 6:28 AM
- */
 
 namespace ElasticScout;
 
 use Illuminate\Support\ServiceProvider;
-use Laravel\Scout\EngineManager;
 use ElasticScout\Generators\DSL;
 use ElasticScout\Generators\Agg;
 use Elasticsearch;
 
+/**
+ * Class ElasticScoutServiceProvider
+ * @package ElasticScout
+ */
 class ElasticScoutServiceProvider extends ServiceProvider
 {
     /**
@@ -24,11 +21,11 @@ class ElasticScoutServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/elastic.php', 'scout.elasatic'
+            __DIR__.'/../config/elastic.php', 'scout.elastic'
         );
 
-        resolve(EngineManager::class)->extend('elastic', function () {
-            $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('elastic.hosts',['localhost:9200']))->build();
+        resolve(\Laravel\Scout\EngineManager::class)->extend('elastic', function () {
+            $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('scout.elastic.hosts', ['localhost:9200']))->build();
             return new ElasticEngine($client);
         });
 
