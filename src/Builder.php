@@ -76,7 +76,30 @@ class Builder extends \Laravel\Scout\Builder
             'pageName' => $pageName,
         ]));
 
-        return $paginator->appends('query', $this->query);
+        //we append either $this->query, request('query'), or request('q') if set
+        if(!empty($this->query)) {
+
+            $paginator->appends('query',$this->query);
+
+        } elseif (request()->has('query')) {
+
+            $paginator->appends('query',request('query'));
+
+        } elseif (request()->has('q')) {
+
+            $paginator->appends('q',request('q'));
+
+        }
+
+        //we append either request('filter') or request('f') if set
+        if(request()->has('filter')) {
+            $paginator->appends('filter',request('filter'));
+        } elseif (request()->has('f')) {
+            $paginator->appends('f',request('f'));
+        }
+
+        return $paginator;
+
     }
 
     /**
