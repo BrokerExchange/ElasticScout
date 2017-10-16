@@ -21,10 +21,6 @@ ElasticScout &copy; Broker Exchange Network
 ## Installation
  * Run composer require command
  `composer require brokerexchange\elasticscout`
- * Set default scout driver to "elastic" in .env file
- ```env
-    SCOUT_DRIVER=elastic
- ```
  * Configure Elasticsearch Host (default: localhost:9200)
  ```env
     ELASTICSEARCH_HOST='elastic1.host.com:9200,elastic2.host.com:9200'

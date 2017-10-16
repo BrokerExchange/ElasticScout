@@ -24,6 +24,8 @@ class ElasticScoutServiceProvider extends ServiceProvider
             __DIR__.'/../config/elastic.php', 'scout.elastic'
         );
 
+        config(['scout.driver' => 'elastic']);
+
         resolve(\Laravel\Scout\EngineManager::class)->extend('elastic', function () {
             $client =  Elasticsearch\ClientBuilder::create()->setHosts(config('scout.elastic.hosts', ['localhost:9200']))->build();
             return new ElasticEngine($client);
