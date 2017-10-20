@@ -189,7 +189,7 @@ class DSL
     public function exists($field)
     {
         return [
-            'exits' => [
+            'exists' => [
                 'field' => $field
             ]
         ];
