@@ -445,4 +445,14 @@ class DSL
             ]
         ];
     }
+
+    /**
+     * @param $filter
+     * @return array
+     */
+    public function filter($filter) {
+        return [
+            'filter' => $filter
+        ];
+    }
 }
