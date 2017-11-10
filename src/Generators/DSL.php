@@ -22,7 +22,7 @@ class DSL
      */
     public function term($field,$value)
     {
-        if(!empty($value) && !empty($field)) {
+        if(!empty($field)) {
             return [
                 'term' => [
                     $field => $value
