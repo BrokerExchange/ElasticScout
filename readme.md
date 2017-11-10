@@ -20,7 +20,7 @@ ElasticScout &copy; Broker Exchange Network
 
 ## Installation
  * Run composer require command
- `composer require brokerexchange\elasticscout`
+ `composer require brokerexchange/elasticscout`
  * Configure Elasticsearch Host (default: localhost:9200)
  ```env
     ELASTICSEARCH_HOST='elastic1.host.com:9200,elastic2.host.com:9200'
