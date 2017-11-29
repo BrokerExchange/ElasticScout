@@ -82,14 +82,13 @@ class DSL
      * @param $field
      * @param $query
      * @param string $operator
-     * @param string $type
      * @param int $minimum
      * @param int $boost
      * @param string $analyzer
      * @param int $fuzziness
      * @return array
      */
-    public function match($field,$query,$operator=null,$type=null,$minimum=null,$boost=null,$analyzer=null,$fuzziness=null)
+    public function match($field,$query,$operator=null,$minimum=null,$boost=null,$analyzer=null,$fuzziness=null)
     {
 
         $params = [];
@@ -100,7 +99,6 @@ class DSL
                     $field => array_filter([
                         'query' => $query,
                         'operator' => $operator,
-                        'type' => $type,
                         'analyzer' => $analyzer,
                         'minimum_should_match' => $minimum,
                         'boost' => $boost,
