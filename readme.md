@@ -5,10 +5,10 @@
 [![composer.lock](https://poser.pugx.org/brokerexchange/elasticscout/composerlock)](https://packagist.org/packages/brokerexchange/elasticscout)
 
 # ElasticScout
-A [Laravel Scout](https://github.com/laravel/scout) Driver for Elasticsearch 5.x
+A [Laravel Scout](https://github.com/laravel/scout) Driver for Elasticsearch 5+
 
 ## Overview
-ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5.x compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds new functionality.
+ElasticScout is a [Laravel Scout](https://github.com/laravel/scout) Elasticsearch 5+ compatible engine. It makes critical changes to the old Elasticseach Scout Engine, as well as adds new functionality.
 
 The ElasticScout engine includes an Elasticsearch Query Builder which can be used to create elaborate custom queries and aggregations, allowing full use of Elasticsearch within the Laravel/Scout Paradigm.
 
@@ -37,6 +37,7 @@ ElasticScout &copy; Broker Exchange Network
         ->boolean()
         ->should(DSL::match('title',$request->input('query')))
         ->should(DSL::match('body',$request->input('query')))
+        ->highlight(['body','title'])
         ->filter(DSL::term('published', 1))
         ->aggregate(Agg::terms('categories', 'category.name'));
         
@@ -45,6 +46,10 @@ ElasticScout &copy; Broker Exchange Network
         
     //retrieve aggregation results
     $categories = $search->aggregation('categories');
+    
+    //retrieve highlight results for title field of first result article
+    $firstArticleTitleHighlights = $articles->first()->highlight('title');
+    
  ```
 ## Mappings
  You may set a custom mapping by simply defining a "mapping" method on your model.

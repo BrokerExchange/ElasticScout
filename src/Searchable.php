@@ -54,4 +54,19 @@ trait Searchable
         return new Builder(new static, $query, $callback);
     }
 
+    /**
+     * Retrieve hilighted field result as a collection
+     *
+     * @param $field
+     * @return \Illuminate\Support\Collection
+     */
+    public function highlight($field)
+    {
+        if(!empty($this->attributes['highlight'][$field])) {
+            return collect($this->attributes['highlight'][$field]);
+        }
+
+        return collect();
+    }
+
 }
