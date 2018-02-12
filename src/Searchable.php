@@ -20,7 +20,7 @@ trait Searchable
      */
     public function SearchableType()
     {
-        return 'doc';
+        return '_doc';
     }
 
     /**
