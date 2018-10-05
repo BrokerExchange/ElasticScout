@@ -16,7 +16,7 @@ The ElasticScout engine includes an Elasticsearch Query Builder which can be use
 ElasticScout is released under the MIT Open Source License, <https://opensource.org/licenses/MIT>
 
 ## Copyright
-ElasticScout &copy; Broker Exchange Network
+ElasticScout &copy; Broker Exchange Network 2018
 
 ## Installation
  * Run composer require command
