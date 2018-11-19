@@ -43,6 +43,18 @@ trait Searchable
     }
 
     /**
+     * Perform a search against the model's indexed data.
+     *
+     * @param  string  $query
+     * @param  \Closure  $callback
+     * @return Builder
+     */
+    public static function search($query = null, $callback = null)
+    {
+        return new Builder(new static, $query, $callback);
+    }
+
+    /**
      * Retrieve hilighted field result as a collection
      *
      * @param $field

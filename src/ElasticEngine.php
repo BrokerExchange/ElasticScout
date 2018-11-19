@@ -390,4 +390,16 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             $query, $this->search($query), $query->model
         ));
     }
+
+    /**
+     * Flush all of the model's records from the engine.
+     *
+     * @param $model
+     */
+    public function flush($model)
+    {
+        $this->elasticsearch->indices()->delete($model->searchableAs());
+
+        $this->createIndex($model);
+    }
 }

@@ -60,8 +60,6 @@ class Builder extends \Laravel\Scout\Builder
      */
     public function paginate($perPage = null, $pageName = 'page', $page = null)
     {
-        dd('here');
-
         $engine = $this->engine();
 
         $page = $page ?: Paginator::resolveCurrentPage($pageName);
