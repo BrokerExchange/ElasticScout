@@ -26,7 +26,7 @@
   "minimum-stability": "stable",
   "require": {
     "elasticsearch/elasticsearch": "^6.0.1",
-    "laravel/scout": "^4.0"
+    "laravel/scout": "^6.0"
   },
   "autoload": {
     "psr-4": {
@@ -35,7 +35,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "8.0.x-dev"
+      "dev-master": "9.0.x-dev"
     },
     "laravel": {
       "providers": [
