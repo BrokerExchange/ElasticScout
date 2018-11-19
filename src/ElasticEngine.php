@@ -317,24 +317,22 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     /**
      * Map the given results to instances of the given model.
      *
+     * @param  Builder  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Support\Collection;
      */
-    public function map($results, $model)
+    public function map(Builder $builder, $results, $model)
     {
         if (count($results['hits']) === 0) {
             return Collection::make();
         }
 
-        $keys = collect($results['hits']['hits'])
-            ->pluck('_id')
-            ->values()
-            ->all();
-
-        $models = $model->whereIn(
-            $model->getQualifiedKeyName(), $keys
-        )->get()->keyBy($model->getKeyName());
+        $models = $model->getScoutModelsByIds(
+            $builder, collect($results['hits']['hits'])->pluck('_id')->values()->all()
+        )->keyBy(function ($model) {
+            return $model->getScoutKey();
+        });
 
         return Collection::make($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
 
@@ -389,7 +387,7 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     public function get(Builder $query)
     {
         return Collection::make($this->map(
-            $this->search($query), $query->model
+            $query, $this->search($query), $query->model
         ));
     }
 }

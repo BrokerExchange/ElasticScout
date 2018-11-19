@@ -60,6 +60,8 @@ class Builder extends \Laravel\Scout\Builder
      */
     public function paginate($perPage = null, $pageName = 'page', $page = null)
     {
+        dd('here');
+
         $engine = $this->engine();
 
         $page = $page ?: Paginator::resolveCurrentPage($pageName);
@@ -67,7 +69,7 @@ class Builder extends \Laravel\Scout\Builder
         $perPage = $perPage ?: $this->model->getPerPage();
 
         $results = Collection::make($engine->map(
-            $rawResults = $engine->paginate($this, $perPage, $page), $this->model
+            $this, $rawResults = $engine->paginate($this, $perPage, $page), $this->model
 
         ));
 
@@ -76,33 +78,12 @@ class Builder extends \Laravel\Scout\Builder
             'pageName' => $pageName,
         ]));
 
-        //we append either $this->query, request('query'), or request('q') if set
-        if(!empty($this->query)) {
-
-            $paginator->appends('query',$this->query);
-
-        } elseif (!empty(request('query'))) {
-
-            $paginator->appends('query',request('query'));
-
-        } elseif (!empty(request('q'))) {
-
-            $paginator->appends('q',request('q'));
-
-        }
-
         //we append either request('filter') or request('f') if set
         if(!empty(request('filter'))) {
-
             $paginator->appends('filter',request('filter'));
-
-        } elseif (!empty(request('f'))) {
-
-            $paginator->appends('f',request('f'));
-
         }
 
-        return $paginator;
+        return $paginator->appends('query',!empty($this->query)?$this->query:request('query'));
     }
 
     /**
@@ -197,7 +178,7 @@ class Builder extends \Laravel\Scout\Builder
      * @param array $query
      * @return $this
      */
-    public function query(Array $query)
+    public function queryRaw(Array $query)
     {
         if(count($query)) {
             $this->dsl = $query;
