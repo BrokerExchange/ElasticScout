@@ -8,6 +8,7 @@
 
 namespace ElasticScout;
 
+use ElasticScout\Generators\DSL;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -51,42 +52,6 @@ class Builder extends \Laravel\Scout\Builder
     protected $combo = '';
 
     /**
-     * execute query and paginate results
-     *
-     * @param null $perPage
-     * @param string $pageName
-     * @param null $page
-     * @return LengthAwarePaginator
-     */
-    public function paginate($perPage = null, $pageName = 'page', $page = null)
-    {
-        dd('here');
-
-        $engine = $this->engine();
-
-        $page = $page ?: Paginator::resolveCurrentPage($pageName);
-
-        $perPage = $perPage ?: $this->model->getPerPage();
-
-        $results = Collection::make($engine->map(
-            $this, $rawResults = $engine->paginate($this, $perPage, $page), $this->model
-
-        ));
-
-        $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [
-            'path' => Paginator::resolveCurrentPath(),
-            'pageName' => $pageName,
-        ]));
-
-        //we append either request('filter') or request('f') if set
-        if(!empty(request('filter'))) {
-            $paginator->appends('filter',request('filter'));
-        }
-
-        return $paginator->appends('query',!empty($this->query)?$this->query:request('query'));
-    }
-
-    /**
      * Add an "order" for the search query.
      *
      * @param  string  $column
@@ -117,6 +82,20 @@ class Builder extends \Laravel\Scout\Builder
      */
     public function dsl()
     {
+        if(empty($this->dsl) && !empty($this->query)) {
+            $dsl = new DSL();
+
+            $columns = collect(\Schema::getColumnListing($this->model->getTable()))->filter(function($column) {
+                return !strstr($column,'id')
+                    && !strstr($column, 'created_at')
+                    && !strstr($column, 'updated_at')
+                    && !strstr($column, 'deleted_at');
+            })->values()->all();
+
+            $this->dsl = $dsl->multi_match($columns,$this->query);
+
+        }
+
         return array_filter([
             'query' => $this->dsl,
             'aggregations' => $this->aggregations,
