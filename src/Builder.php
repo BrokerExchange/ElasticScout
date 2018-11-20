@@ -92,7 +92,14 @@ class Builder extends \Laravel\Scout\Builder
                     && !strstr($column, 'deleted_at');
             })->values()->all();
 
-            $this->dsl = $dsl->multi_match($columns,$this->query);
+            $query = $this->boolean()
+                ->must($dsl->multi_match($columns,$this->query));
+
+            if(count($this->wheres) > 0) {
+                collect($this->wheres)->each(function($value,$key) use($query,$dsl) {
+                    $query->filter($dsl->term($key,$value));
+                });
+            }
 
         }
 
