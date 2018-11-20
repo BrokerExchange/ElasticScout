@@ -222,16 +222,16 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param Builder $query
+     * @param Builder $builder
      * @param array $options
      * @return array
      */
-    protected function performSearch(Builder $query, array $options = [])
+    protected function performSearch(Builder $builder, array $options = [])
     {
         $search = [
-            'index' =>  !empty($query->index)?$query->index:$query->model->searchableAs(),
-            'type'  =>  $query->model->searchableType(),
-            'body' => $query->dsl(),
+            'index' =>  !empty($builder->index)?$builder->index:$builder->model->searchableAs(),
+            'type'  =>  $builder->model->searchableType(),
+            'body' => $builder->dsl(),
         ];
 
         if (array_key_exists('size', $options)) {
@@ -246,22 +246,31 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             ]);
         }
 
-        if (!empty($orders = $this->orders($query))) {
+        if (!empty($orders = $this->orders($builder))) {
             $search['body'] = array_merge($search['body'], [
                 'sort' => $orders,
             ]);
         }
 		
-		if (!empty($highlights = $this->highlights($query))) {
+		if (!empty($highlights = $this->highlights($builder))) {
             $search['body'] = array_merge($search['body'], [
                 'highlight' => ['fields' => $highlights],
             ]);
 		}
 
+        if ($builder->callback) {
+            return call_user_func(
+                $builder->callback,
+                $this->elasticsearch,
+                $builder->query,
+                $options
+            );
+        }
+
         $results = $this->elasticsearch->search($search);
 
         if(!empty($results['aggregations'])) {
-            $query->aggregations($results['aggregations']);
+            $builder->aggregations($results['aggregations']);
         }
 
 		return $results;
@@ -381,13 +390,13 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     /**
      * Get the results of the given query mapped onto models.
      *
-     * @param  Builder  $query
+     * @param  Builder  $builder
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function get(Builder $query)
+    public function get(Builder $builder)
     {
         return Collection::make($this->map(
-            $query, $this->search($query), $query->model
+            $builder, $this->search($builder), $builder->model
         ));
     }
 

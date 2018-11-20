@@ -49,9 +49,14 @@ trait Searchable
      * @param  \Closure  $callback
      * @return Builder
      */
-    public static function search($query = null, $callback = null)
+    public static function search($query = '', $callback = null)
     {
-        return new Builder(new static, $query, $callback);
+        if(empty($query)) {
+            $query = request('query');
+        }
+        return new Builder(
+            new static, $query, $callback, static::usesSoftDelete() && config('scout.soft_delete', false)
+        );
     }
 
     /**
