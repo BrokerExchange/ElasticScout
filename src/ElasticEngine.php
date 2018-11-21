@@ -40,8 +40,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     /**
      * Update the given model in the index.
      *
-     * @param  Collection  $models
-     * @return void
+     * @param \Illuminate\Database\Eloquent\Collection $models
+     * @throws \Elasticsearch\Common\Exceptions\ClientErrorResponseException
      */
     public function update($models)
     {
@@ -403,7 +403,8 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     /**
      * Flush all of the model's records from the engine.
      *
-     * @param $model
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @throws \Elasticsearch\Common\Exceptions\ClientErrorResponseException
      */
     public function flush($model)
     {
