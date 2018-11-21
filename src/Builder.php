@@ -101,6 +101,9 @@ class Builder extends \Laravel\Scout\Builder
                 });
             }
 
+        } elseif(empty($this->dsl)) {
+            $dsl = new DSL();
+            $this->queryRaw($dsl->match_all());
         }
 
         return array_filter([
