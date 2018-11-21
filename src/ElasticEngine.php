@@ -267,8 +267,6 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             );
         }
 
-        dump($search);
-
         $results = $this->elasticsearch->search($search);
 
         if(!empty($results['aggregations'])) {
