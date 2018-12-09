@@ -352,4 +352,12 @@ class Builder extends \Laravel\Scout\Builder
         $this->combo = 'constant_score';
         $this->dsl = [$this->combo => array_filter(['boost'=>$boost])];
     }
+
+    /**
+     * @param int $size
+     * @return Builder
+     */
+    public function size($size) {
+        return $this->take($size);
+    }
 }
