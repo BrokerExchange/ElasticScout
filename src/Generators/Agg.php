@@ -434,4 +434,24 @@ class Agg
             ]
         ];
     }
+
+    /**
+     * @param $namespace
+     * @param array $sources
+     * @param int $size
+     * @param null $after
+     * @return array
+     */
+    public function composite($namespace,$sources=[],$size=1000,$after=null)
+    {
+        return [
+            $namespace => [
+                'composite' => array_filter([
+                    'size' => $size,
+                    'sources' => $sources,
+                    'after' => $after,
+                ])
+            ]
+        ];
+    }
 }

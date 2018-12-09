@@ -118,7 +118,7 @@ class Builder extends \Laravel\Scout\Builder
      * retrieve aggregation result
      *
      * @param null $key
-     * @return mixed
+     * @return Collection
      */
     public function aggregation($key = null)
     {
@@ -126,7 +126,7 @@ class Builder extends \Laravel\Scout\Builder
             return Collection::make($this->aggregations[$key]['buckets']);
         }
 
-        return null;
+        return Collection::make($this->aggregations);
     }
 
     /**
