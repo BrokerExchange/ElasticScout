@@ -355,8 +355,9 @@ class Builder extends \Laravel\Scout\Builder
 
     /**
      * @param int $size
+     * @return Builder
      */
     public function size($size) {
-        $this->take($size);
+        return $this->take($size);
     }
 }
