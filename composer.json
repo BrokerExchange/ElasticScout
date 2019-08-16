@@ -1,6 +1,6 @@
 {
   "name": "brokerexchange/elasticscout",
-  "description": "Laravel Scout Driver for Elasticsearch 6.x",
+  "description": "Laravel Scout Driver for Elasticsearch 6 and 7",
   "keywords": [
     "elasticsearch",
     "search",
@@ -25,7 +25,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "elasticsearch/elasticsearch": "^6.1",
+    "elasticsearch/elasticsearch": "^6.0|^7.0",
     "laravel/scout": "^7.0"
   },
   "autoload": {

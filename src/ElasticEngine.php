@@ -64,7 +64,6 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             $body->push([
                 'index' => [
                     '_index' => $model->searchableAs(),
-                    '_type' => $model->searchableType(),
                     '_id' => $model->getKey(),
                 ],
             ]);
@@ -170,7 +169,6 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
             $body->push([
                 'delete' => [
                     '_index' => $model->searchableAs(),
-                    '_type' => $model->searchableType(),
                     '_id'  => $model->getKey(),
                 ],
             ]);
@@ -230,7 +228,6 @@ class ElasticEngine extends \Laravel\Scout\Engines\Engine
     {
         $search = [
             'index' =>  !empty($builder->index)?$builder->index:$builder->model->searchableAs(),
-            'type'  =>  $builder->model->searchableType(),
             'body' => $builder->dsl(),
         ];
 

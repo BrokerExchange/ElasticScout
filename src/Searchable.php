@@ -14,16 +14,6 @@ trait Searchable
     use \Laravel\Scout\Searchable;
 
     /**
-     * Elasticsearch type to be used within Elasticsearch index
-     *
-     * @return string
-     */
-    public function SearchableType()
-    {
-        return 'doc';
-    }
-
-    /**
      * return a fresh instance of agg
      * @return Agg
      */
